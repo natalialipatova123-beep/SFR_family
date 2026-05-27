@@ -279,25 +279,28 @@
 
     /* ──── CALC BOX ──── */
     .calc-box {
-      background: var(--blue);
-      color: #fff;
+      background: #0055a4 !important;
+      color: #ffffff !important;
       border-radius: var(--radius);
       padding: 18px 16px;
     }
-    .calc-box h3 { font-size: 14px; opacity: .85; margin-bottom: 14px; font-weight: 500; }
+    .calc-box * { color: #ffffff !important; }
+    .calc-box h3 { font-size: 14px; opacity: .9; margin-bottom: 14px; font-weight: 500; }
     .calc-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
-    .calc-field label { font-size: 12px; opacity: .75; }
+    .calc-field label { font-size: 12px; color: rgba(255,255,255,0.85) !important; }
     .calc-field input {
       padding: 10px 12px;
-      background: rgba(255,255,255,.15);
-      border: 1.5px solid rgba(255,255,255,.3);
+      background: rgba(255,255,255,.18) !important;
+      border: 1.5px solid rgba(255,255,255,.5) !important;
       border-radius: 8px;
-      color: #fff; font-size: 16px; font-weight: 700;
+      color: #ffffff !important;
+      font-size: 16px; font-weight: 700;
       outline: none;
       transition: border-color .18s;
+      -webkit-text-fill-color: #ffffff !important;
     }
-    .calc-field input:focus { border-color: rgba(255,255,255,.8); }
-    .calc-field input::placeholder { opacity: .5; font-weight: 400; font-size: 14px; }
+    .calc-field input:focus { border-color: rgba(255,255,255,.9) !important; }
+    .calc-field input::placeholder { color: rgba(255,255,255,0.55) !important; -webkit-text-fill-color: rgba(255,255,255,0.55) !important; font-weight: 400; font-size: 14px; }
     .calc-result-row {
       display: flex; align-items: baseline; gap: 6px;
       background: rgba(255,255,255,.15);
@@ -305,9 +308,9 @@
       padding: 10px 12px;
       margin-top: 4px;
     }
-    .calc-result-row .cr-label { font-size: 12px; opacity: .8; flex: 1; }
-    .calc-result-row .cr-val { font-size: 22px; font-weight: 800; }
-    .calc-note { font-size: 11px; opacity: .65; margin-top: 8px; line-height: 1.4; }
+    .calc-result-row .cr-label { font-size: 12px; color: rgba(255,255,255,0.85) !important; flex: 1; }
+    .calc-result-row .cr-val { font-size: 22px; font-weight: 800; color: #ffffff !important; }
+    .calc-note { font-size: 11px; color: rgba(255,255,255,0.7) !important; margin-top: 8px; line-height: 1.4; }
 
     /* ──── DETAIL CARDS ──── */
     .cards { display: flex; flex-direction: column; gap: 8px; }
@@ -703,18 +706,20 @@
 
     <!-- Calculator -->
     <div class="calc-box">
-      <h3>Рассчитайте вашу выплату (7% от дохода)</h3>
+      <h3>Рассчитайте вашу выплату</h3>
       <div class="calc-field">
         <label>Ваша ставка НДФЛ</label>
         <div style="display:flex;gap:8px;margin-top:6px;">
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;font-weight:400;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;flex:1;justify-content:center;" id="rate1label">
-            <input type="radio" name="ndflRate" value="13" checked onchange="calcPayment()" style="accent-color:var(--blue);width:16px;height:16px;"/> 13%
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;font-weight:400;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;flex:1;justify-content:center;" id="rate2label">
-            <input type="radio" name="ndflRate" value="15" onchange="calcPayment()" style="accent-color:var(--blue);width:16px;height:16px;"/> 15%
-          </label>
+          <button type="button" id="rateBtn13" onclick="selectRate(13)"
+            style="flex:1;padding:11px 8px;font-size:15px;font-weight:700;border:2px solid #fff !important;border-radius:10px;cursor:pointer;background:#fff !important;color:#0055a4 !important;-webkit-text-fill-color:#0055a4 !important;transition:all .15s;">
+            ✓ 13%
+          </button>
+          <button type="button" id="rateBtn15" onclick="selectRate(15)"
+            style="flex:1;padding:11px 8px;font-size:15px;font-weight:700;border:2px solid rgba(255,255,255,0.5) !important;border-radius:10px;cursor:pointer;background:rgba(255,255,255,0.12) !important;color:rgba(255,255,255,0.85) !important;-webkit-text-fill-color:rgba(255,255,255,0.85) !important;transition:all .15s;">
+            15%
+          </button>
         </div>
-        <div id="rateHint" style="font-size:12px;color:var(--hint);margin-top:6px;">13% — доход до 2,4 млн ₽ в год. В обоих случаях выплата = 7% от дохода (льготная ставка: 6% или 8% соответственно).</div>
+        <div id="rateHint" style="display:none;"></div>
       </div>
       <div class="calc-field">
         <label>Ваш годовой доход (с которого удержан НДФЛ), ₽</label>
@@ -816,7 +821,7 @@
 
 <script>
 // ──── Telegram ────
-const tg = window.Telegram?.WebApp;
+const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
 if (tg) {
   tg.ready();
   tg.expand();
@@ -1082,12 +1087,31 @@ function updateCalc() {
   el.innerHTML = checkHTML;
 }
 
+// ──── Rate selector ────
+let selectedRate = 13;
+function selectRate(r) {
+  selectedRate = r;
+  var b13 = document.getElementById('rateBtn13');
+  var b15 = document.getElementById('rateBtn15');
+  b13.style.cssText = 'flex:1;padding:11px 8px;font-size:15px;font-weight:700;border-radius:10px;cursor:pointer;transition:all .15s;' +
+    (r === 13
+      ? 'background:#fff !important;color:#0055a4 !important;-webkit-text-fill-color:#0055a4 !important;border:2px solid #fff !important;'
+      : 'background:rgba(255,255,255,0.12) !important;color:rgba(255,255,255,0.85) !important;-webkit-text-fill-color:rgba(255,255,255,0.85) !important;border:2px solid rgba(255,255,255,0.5) !important;');
+  b13.textContent = r === 13 ? '✓ 13%' : '13%';
+  b15.style.cssText = 'flex:1;padding:11px 8px;font-size:15px;font-weight:700;border-radius:10px;cursor:pointer;transition:all .15s;' +
+    (r === 15
+      ? 'background:#fff !important;color:#0055a4 !important;-webkit-text-fill-color:#0055a4 !important;border:2px solid #fff !important;'
+      : 'background:rgba(255,255,255,0.12) !important;color:rgba(255,255,255,0.85) !important;-webkit-text-fill-color:rgba(255,255,255,0.85) !important;border:2px solid rgba(255,255,255,0.5) !important;');
+  b15.textContent = r === 15 ? '✓ 15%' : '15%';
+  calcPayment();
+}
+
 // ──── Calc payment ────
 function calcPayment() {
   const i1 = parseFloat(document.getElementById('calcIncome1').value) || 0;
-  const i2 = parseFloat(document.getElementById('calcIncome2')?.value) || 0;
-  const rateEl = document.querySelector('input[name="ndflRate"]:checked');
-  const rate = rateEl ? parseInt(rateEl.value) : 13;
+  const calcIncome2El = document.getElementById('calcIncome2');
+  const i2 = parseFloat(calcIncome2El ? calcIncome2El.value : 0) || 0;
+  const rate = selectedRate;
   const preferential = rate === 15 ? 8 : 6;
   const diff = rate - preferential; // всегда 7
   const hint = document.getElementById('rateHint');
@@ -1099,37 +1123,4 @@ function calcPayment() {
   const note = document.getElementById('calcNote');
   if (total > 0) {
     el.textContent = fmt(Math.round(total)) + ' ₽';
-    note.textContent = '≈ ' + fmt(Math.round(i1 * diff / 100)) + ' ₽ (вам)' +
-      (i2 > 0 ? ' + ' + fmt(Math.round(i2 * diff / 100)) + ' ₽ (супругу)' : '') +
-      '. Фактическую сумму определяет СФР по данным ФНС.';
-  } else {
-    el.textContent = '—';
-    note.textContent = 'Введите годовой доход выше для расчёта.';
-  }
-}
-
-// ──── Eligibility ────
-function calcResult() {
-  const pm = S.region ? REGIONS[S.region] : 20644;
-  const limit = pm * 1.5;
-  const monthlyPC = S.totalIncome > 0 ? S.totalIncome / S.famSize / 12 : 0;
-  const incomeOk = S.totalIncome > 0 ? monthlyPC <= limit : null;
-
-  const blockers = [];
-  const warnings = [];
-
-  if (!incomeOk && incomeOk !== null) {
-    blockers.push(`Среднедушевой доход семьи (${fmt(Math.round(monthlyPC))} ₽/мес) превышает допустимый порог 1,5 × ПМ = ${fmt(Math.round(limit))} ₽/мес для ${S.region}.`);
-  }
-
-  if (blockers.length > 0) {
-    buildNo(blockers);
-    showResult('r-no');
-    return;
-  }
-
-  // Yes — show result
-  const spouseNote = S.spouseWork === 'ndfl'
-    ? 'Ваш супруг(а) также может подать заявление отдельно — выплата рассчитывается для каждого.'
-    : S.spouseWork === 'single'
-    ? 'Как единственному родителю, выплата рассчитывается по
+    note.textContent = '≈ ' + fmt(Math.round(i1
