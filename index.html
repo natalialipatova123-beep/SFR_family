@@ -819,11 +819,11 @@ if (tg) {
   tg.expand();
   const tp = tg.themeParams || {};
   const set = (v, c) => document.documentElement.style.setProperty(v, c);
-  if (tp.bg_color)          set('--bg', tp.bg_color);
-  if (tp.text_color)        set('--text', tp.text_color);
-  if (tp.hint_color)        set('--hint', tp.hint_color);
-  if (tp.button_color)    { set('--blue', tp.button_color); set('--btn', tp.button_color); }
+  if (tp.bg_color)           set('--bg', tp.bg_color);
+  if (tp.text_color)         set('--text', tp.text_color);
+  if (tp.hint_color)         set('--hint', tp.hint_color);
   if (tp.secondary_bg_color) set('--secondary-bg', tp.secondary_bg_color);
+  // --blue и --btn намеренно не перезаписываем: оставляем фирменный синий СФР #0055a4
 }
 
 // ──── REGIONS (ПМ трудоспособного населения 2026, руб/мес) ────
@@ -1132,4 +1132,4 @@ function calcResult() {
     ? 'Как единственному родителю, выплата рассчитывается по вашему доходу.'
     : 'Супруг(а) не имеет права на выплату, но вы сами можете её получить.';
 
-  document.getElementById('rYesBody').textContent = spouseNote
+  document.ge
