@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Ежегодная семейная выплата — СФР</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111827;
+      --hint: #6b7280;
+      --btn: #0055a4;
+      --btn-text: #ffffff;
+      --secondary-bg: #f3f6fc;
+      --blue: #0055a4;
+      --blue-light: #e8f0fb;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --orange: #d97706;
+      --orange-light: #fef3c7;
+      --border: #e5e7eb;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --shadow: 0 2px 12px rgba(0,85,164,.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { font-size: 16px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ──── HEADER ──── */
+    .header {
+      background: var(--blue);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header img { width: 120px; filter: brightness(0) invert(1); }
+    .header-divider { width: 1px; height: 28px; background: rgba(255,255,255,.3); }
+    .header-title { font-size: 12px; color: rgba(255,255,255,.9); font-weight: 500; line-height: 1.3; }
+
+    /* ──── PROGRESS ──── */
+    .prog-wrap { padding: 10px 16px 0; }
+    .prog-row { display: flex; align-items: center; gap: 8px; }
+    .prog-bar { flex: 1; height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .prog-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width .4s ease; }
+    .prog-label { font-size: 11px; color: var(--hint); white-space: nowrap; }
+
+    /* ──── MAIN ──── */
+    .main { flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 0; }
+
+    /* ──── SCREEN ──── */
+    .screen { display: none; flex-direction: column; gap: 16px; animation: fadeUp .28s ease both; }
+    .screen.active { display: flex; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ──── WELCOME ──── */
+    .hero {
+      background: linear-gradient(140deg, #0047a0 0%, #1a77d2 100%);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; text-align: center; color: #fff;
+    }
+    .hero img { width: 140px; filter: brightness(0) invert(1); opacity: .92; }
+    .hero-divider { width: 40px; height: 2px; background: rgba(255,255,255,.35); border-radius: 2px; }
+    .hero h2 { font-size: 18px; font-weight: 700; line-height: 1.35; }
+    .hero p  { font-size: 13px; opacity: .85; line-height: 1.5; }
+
+    .features { display: flex; flex-direction: column; gap: 8px; }
+    .feat {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: var(--secondary-bg);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 13px; line-height: 1.45;
+    }
+    .feat-icon { font-size: 18px; flex-shrink: 0; margin-top: 0px; }
+
+    /* ──── STEP HEADER ──── */
+    .step-icon {
+      width: 52px; height: 52px;
+      background: var(--blue-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .step-q { font-size: 18px; font-weight: 700; line-height: 1.35; }
+    .step-hint { font-size: 13px; color: var(--hint); line-height: 1.5; }
+
+    /* ──── OPTION BUTTONS ──── */
+    .opts { display: flex; flex-direction: column; gap: 8px; }
+    .opt {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 14px;
+      background: var(--secondary-bg);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all .18s;
+      text-align: left;
+    }
+    .opt:hover, .opt:focus { border-color: var(--blue); background: var(--blue-light); outline: none; }
+    .opt-icon { font-size: 20px; flex-shrink: 0; }
+    .opt-body { flex: 1; }
+    .opt-label { font-size: 14px; font-weight: 600; }
+    .opt-sub { font-size: 12px; color: var(--hint); margin-top: 2px; }
+
+    /* ──── NUMBER PICKER ──── */
+    .npicker {
+      display: flex; align-items: center;
+      background: var(--secondary-bg);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      align-self: flex-start;
+    }
+    .np-btn {
+      width: 52px; height: 52px;
+      font-size: 24px; font-weight: 300;
+      color: var(--blue);
+      background: none; border: none; cursor: pointer;
+      transition: background .15s;
+    }
+    .np-btn:hover { background: var(--blue-light); }
+    .np-btn:disabled { opacity: .3; cursor: default; }
+    .np-val { width: 64px; text-align: center; font-size: 26px; font-weight: 700; background: none; border: none; color: var(--text); }
+
+    /* ──── REGION SELECTOR ──── */
+    .region-wrap { display: flex; flex-direction: column; gap: 8px; }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--secondary-bg);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 0 12px;
+      transition: border-color .18s;
+    }
+    .search-box:focus-within { border-color: var(--blue); }
+    .search-box span { font-size: 16px; }
+    .search-box input {
+      flex: 1; padding: 11px 0;
+      font-size: 14px; border: none; background: none;
+      color: var(--text); outline: none;
+    }
+    .search-box input::placeholder { color: var(--hint); }
+    .region-list {
+      max-height: 220px; overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+    }
+    .region-item {
+      padding: 10px 14px;
+      font-size: 14px; cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .region-item:last-child { border-bottom: none; }
+    .region-item:hover { background: var(--blue-light); }
+    .region-item.selected { background: var(--blue-light); font-weight: 600; color: var(--blue); }
+    .region-item .ri-pm { margin-left: auto; font-size: 12px; color: var(--hint); }
+    .region-selected-box {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--blue-light);
+      border: 2px solid var(--blue);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-size: 14px; font-weight: 600; color: var(--blue);
+    }
+    .region-selected-box button {
+      margin-left: auto; background: none; border: none;
+      color: var(--hint); font-size: 18px; cursor: pointer;
+    }
+
+    /* ──── INCOME INPUT ──── */
+    .income-group { display: flex; flex-direction: column; gap: 6px; }
+    .income-label { font-size: 13px; font-weight: 600; color: var(--hint); }
+    .income-input-wrap {
+      display: flex; align-items: center;
+      background: var(--secondary-bg);
+      border: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: border-color .18s;
+    }
+    .income-input-wrap:focus-within { border-color: var(--blue); }
+    .income-input-wrap input {
+      flex: 1; padding: 13px 14px;
+      font-size: 18px; font-weight: 700;
+      background: none; border: none; outline: none;
+      color: var(--text);
+    }
+    .income-input-wrap input::placeholder { font-weight: 400; font-size: 14px; color: var(--hint); }
+    .income-input-wrap span { padding-right: 14px; font-size: 16px; color: var(--hint); }
+
+    .threshold-box {
+      background: var(--blue-light);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 10px 12px;
+      font-size: 13px; line-height: 1.5;
+    }
+    .threshold-box b { color: var(--blue); }
+
+    /* ──── INFO BOX ──── */
+    .info-box {
+      background: var(--blue-light);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 10px 12px;
+      font-size: 13px; line-height: 1.5;
+    }
+    .warn-box {
+      background: var(--orange-light);
+      border-left: 3px solid var(--orange);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 10px 12px;
+      font-size: 13px; line-height: 1.5;
+    }
+
+    /* ──── CTA BUTTONS ──── */
+    .btn-primary {
+      width: 100%; padding: 15px;
+      background: var(--blue); color: #fff;
+      font-size: 15px; font-weight: 600;
+      border: none; border-radius: var(--radius-sm);
+      cursor: pointer; transition: opacity .2s;
+    }
+    .btn-primary:hover { opacity: .9; }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-secondary {
+      width: 100%; padding: 13px;
+      background: transparent; color: var(--blue);
+      font-size: 14px; font-weight: 600;
+      border: 2px solid var(--blue);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-secondary:hover { background: var(--blue-light); }
+
+    /* ──── RESULT ──── */
+    .result-hero {
+      border-radius: var(--radius);
+      padding: 22px 16px;
+      text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .result-hero.yes { background: var(--green-light); border: 2px solid #86efac; }
+    .result-hero.no  { background: var(--red-light);   border: 2px solid #fca5a5; }
+    .result-hero.maybe { background: var(--orange-light); border: 2px solid #fcd34d; }
+    .result-emoji { font-size: 48px; }
+    .result-title { font-size: 19px; font-weight: 700; line-height: 1.3; }
+    .result-hero.yes   .result-title { color: var(--green); }
+    .result-hero.no    .result-title { color: var(--red); }
+    .result-hero.maybe .result-title { color: var(--orange); }
+    .result-body { font-size: 13px; line-height: 1.5; color: #374151; }
+
+    /* ──── CALC BOX ──── */
+    .calc-box {
+      background: var(--blue);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 18px 16px;
+    }
+    .calc-box h3 { font-size: 14px; opacity: .85; margin-bottom: 14px; font-weight: 500; }
+    .calc-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+    .calc-field label { font-size: 12px; opacity: .75; }
+    .calc-field input {
+      padding: 10px 12px;
+      background: rgba(255,255,255,.15);
+      border: 1.5px solid rgba(255,255,255,.3);
+      border-radius: 8px;
+      color: #fff; font-size: 16px; font-weight: 700;
+      outline: none;
+      transition: border-color .18s;
+    }
+    .calc-field input:focus { border-color: rgba(255,255,255,.8); }
+    .calc-field input::placeholder { opacity: .5; font-weight: 400; font-size: 14px; }
+    .calc-result-row {
+      display: flex; align-items: baseline; gap: 6px;
+      background: rgba(255,255,255,.15);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 4px;
+    }
+    .calc-result-row .cr-label { font-size: 12px; opacity: .8; flex: 1; }
+    .calc-result-row .cr-val { font-size: 22px; font-weight: 800; }
+    .calc-note { font-size: 11px; opacity: .65; margin-top: 8px; line-height: 1.4; }
+
+    /* ──── DETAIL CARDS ──── */
+    .cards { display: flex; flex-direction: column; gap: 8px; }
+    .card {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--secondary-bg);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 13px; line-height: 1.45;
+    }
+    .card-icon { font-size: 18px; flex-shrink: 0; }
+    .card b { display: block; font-size: 13px; margin-bottom: 2px; }
+    .card.blocked { background: var(--red-light); }
+
+    /* ──── FOOTER NOTE ──── */
+    .foot-note {
+      font-size: 11px; color: var(--hint);
+      text-align: center; line-height: 1.5;
+    }
+
+    /* ──── DIVIDER ──── */
+    .divider { height: 1px; background: var(--border); }
+
+    /* ──── SFR IMAGES ──── */
+    .sfr-banner {
+      width: 100%; border-radius: var(--radius);
+      overflow: hidden; position: relative;
+      background: var(--secondary-bg);
+      aspect-ratio: 16/7;
+    }
+    .sfr-banner img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+    .sfr-banner-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,.55));
+      color: #fff; font-size: 12px; font-weight: 600;
+      padding: 20px 12px 10px;
+    }
+    .sfr-family-icon {
+      width: 76px; height: 76px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,.18);
+      flex-shrink: 0;
+    }
+    .sfr-family-icon img { width: 52px; height: 52px; }
+    .sfr-links-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .sfr-link-card {
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      aspect-ratio: 16/9;
+      background: var(--secondary-bg);
+    }
+    .sfr-link-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sfr-link-card .slc-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,.65));
+      color: #fff; font-size: 11px; font-weight: 600;
+      padding: 16px 8px 7px; line-height: 1.3;
+    }
+    .sfr-link-card:hover { opacity: .9; }
+
+    /* ──── DARK MODE ──── */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1e;
+        --text: #f5f5f7;
+        --hint: #8e8e93;
+        --secondary-bg: #2c2c2e;
+        --border: #3a3a3c;
+        --blue-light: #1a2d4a;
+        --green-light: #0d2b1f;
+        --red-light: #2b0d0d;
+        --orange-light: #2b1d00;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header" id="appHeader">
+  <img src="https://sfr.gov.ru/thm/pfrf2020/new-design/img/logo.svg" alt="СФР" onerror="this.style.display='none';document.getElementById('hdrFallback').style.display='block'"/>
+  <span id="hdrFallback" style="display:none;font-size:14px;color:#fff;font-weight:700;">СФР</span>
+  <div class="header-divider"></div>
+  <div class="header-title">Ежегодная<br>семейная выплата</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="prog-wrap" id="progWrap" style="opacity:0">
+  <div class="prog-row">
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <span class="prog-label" id="progLabel">1 / 7</span>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="main">
+
+  <!-- ──── S0: Welcome ──── -->
+  <div class="screen active" id="s0">
+
+    <!-- Главный баннер с картинкой СФР -->
+    <div class="sfr-banner">
+      <img src="https://sfr.gov.ru/data/mainpage/b3e4e52b-7e97-4a52-963c-fb5cfc103611-small.jpg"
+           alt="Семьям с детьми"
+           onerror="this.parentElement.style.background='linear-gradient(140deg,#0047a0,#1a77d2)';this.style.display='none'"/>
+      <div class="sfr-banner-caption">Социальный фонд России · Ежегодная семейная выплата</div>
+    </div>
+
+    <div class="hero">
+      <div style="display:flex;align-items:center;gap:14px;justify-content:center;">
+        <div class="sfr-family-icon">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+               viewBox="5 0 130 104" style="width:58px;height:58px;" xml:space="preserve">
+            <defs>
+              <path id="sfr_clip_path" d="M129.697,31.286c-4.762-6.152-14.354-13.484-32.983-13.484H84.938L47.8,70.604h-2.632
+                c-9.105,0-15.709-2.311-19.089-6.668c-2.623-3.389-3.379-8.23-2.072-13.285c1.918-7.424,8.433-15.355,20.974-15.355h17.27
+                L84.336,3.198H62.998l-9.99,14.521H44.98c-22.604,0-34.59,15.374-37.989,28.537C4.317,56.613,6.21,66.982,12.186,74.698
+                c4.764,6.152,14.354,13.484,32.981,13.484h11.775l37.139-52.808h2.632c9.109,0,15.707,2.305,19.092,6.672
+                c2.624,3.385,3.38,8.227,2.07,13.284c-2.604,10.078-13.287,15.354-22.499,15.354H79.63l-30.51,44.35h21.337l18.416-26.77
+                h6.504c22.095,0,35.975-14.793,39.52-28.542C137.569,49.368,135.675,39.001,129.697,31.286z"/>
+              <clipPath id="sfr_clip">
+                <use xlink:href="#sfr_clip_path" overflow="visible"/>
+              </clipPath>
+              <linearGradient id="sfr_g1" gradientUnits="userSpaceOnUse" x1="79.6174" y1="46.1421" x2="79.6174" y2="88.4626" gradientTransform="matrix(0.7524 -0.316 0.4362 1.0387 -28.9361 -13.462)">
+                <stop offset="0.0357" style="stop-color:#0991FF"/>
+                <stop offset="0.3982" style="stop-color:#106CEF"/>
+                <stop offset="1" style="stop-color:#1B37DA"/>
+              </linearGradient>
+              <linearGradient id="sfr_g2" gradientUnits="userSpaceOnUse" x1="121.6951" y1="107.5801" x2="121.6951" y2="146.2515" gradientTransform="matrix(-0.2732 0.1359 -0.3056 -0.6141 191.7495 98.7451)">
+                <stop offset="0.0102" style="stop-color:#E60F2F"/>
+                <stop offset="0.4745" style="stop-color:#CE1294"/>
+                <stop offset="1" style="stop-color:#1B37DA"/>
+              </linearGradient>
+              <linearGradient id="sfr_g3" gradientUnits="userSpaceOnUse" x1="100.365" y1="110.3828" x2="96.365" y2="82.8828" gradientTransform="matrix(0.9854 -0.0462 -0.0462 0.8534 4.3734 13.8663)">
+                <stop offset="0.1173" style="stop-color:#CC0A1E"/>
+                <stop offset="1" style="stop-color:#EE030E"/>
+              </linearGradient>
+              <linearGradient id="sfr_g4" gradientUnits="userSpaceOnUse" x1="282.1501" y1="100.3428" x2="282.1501" y2="149.551" gradientTransform="matrix(-0.5924 0.2587 -0.2699 -0.618 262.1833 76.724)">
+                <stop offset="0.1786" style="stop-color:#E60F2F"/>
+                <stop offset="0.4745" style="stop-color:#86009C"/>
+                <stop offset="1" style="stop-color:#1B37DA"/>
+              </linearGradient>
+            </defs>
+            <path fill="#EE030E" d="M129.7,31.286c-4.762-6.152-14.354-13.484-32.984-13.484H84.94L47.8,70.604h-2.632
+              c-5.381,0-9.878-0.812-13.357-2.369l-16.825,9.582c5.405,5.265,14.643,10.367,30.187,10.367h11.775l37.14-52.809h2.634
+              c9.107,0,15.706,2.306,19.09,6.673c2.625,3.385,3.381,8.227,2.07,13.284c-2.604,10.078-13.285,15.354-22.499,15.354h-15.75
+              l-30.511,44.351h21.337l18.417-26.771h6.504c22.095,0,35.976-14.793,39.521-28.542C137.572,49.369,135.677,39.002,129.7,31.286z"/>
+            <path fill="#0990FE" d="M26.079,63.937c-2.623-3.389-3.379-8.23-2.072-13.285c1.918-7.424,8.434-15.356,20.975-15.356h17.271
+              L84.338,3.198H62.999L53.01,17.719h-8.031c-22.604,0-34.591,15.374-37.99,28.538C4.313,56.615,6.206,66.984,12.182,74.7
+              c0.789,1.02,1.726,2.072,2.8,3.117l16.825-9.582C29.394,67.157,27.463,65.722,26.079,63.937z"/>
+            <g clip-path="url(#sfr_clip)">
+              <polygon fill="url(#sfr_g1)" points="130.865,19.728 7.365,84.728 -11.57,34.736 104.796,-14.133"/>
+              <polygon fill="url(#sfr_g2)" points="91.469,33.534 133.719,12.512 146.959,39.119 104.713,60.144"/>
+              <polygon fill="url(#sfr_g3)" points="40.048,94.129 143.666,61.451 154.269,95.065 50.651,127.744"/>
+              <polygon fill="url(#sfr_g4)" points="13.365,80.728 94.365,36.228 108.365,62.228 33.865,103.228"/>
+            </g>
+          </svg>
+        </div>
+        <div style="text-align:left;line-height:1.2;">
+          <div style="font-size:13px;font-weight:700;color:#fff;letter-spacing:.01em;">Социальный фонд</div>
+          <div style="font-size:13px;font-weight:700;color:#fff;letter-spacing:.01em;">России</div>
+        </div>
+      </div>
+      <div class="hero-divider"></div>
+      <h2>Узнайте, положена ли вам ежегодная семейная выплата</h2>
+      <p>Ответьте на несколько вопросов — получите точный ответ и расчёт суммы за 2 минуты</p>
+    </div>
+
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon">💰</div>
+        <div>Государство возвращает <b>7% от уплаченного НДФЛ</b> работающим родителям с двумя и более детьми</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📅</div>
+        <div>Заявления принимаются с <b>1 июня по 1 октября 2026 года</b> за доходы 2025 года</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📍</div>
+        <div>Порог дохода и потенциальная выплата рассчитываются по вашему <b>региону проживания</b></div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="go(1)">Начать проверку →</button>
+
+    <!-- Другие меры поддержки — картинки с sfr.gov.ru -->
+    <div>
+      <p style="font-size:12px;color:var(--hint);margin-bottom:8px;font-weight:600;">ДРУГИЕ МЕРЫ ПОДДЕРЖКИ СЕМЕЙ</p>
+      <div class="sfr-links-row">
+        <div class="sfr-link-card" onclick="openExternal('https://sfr.gov.ru/grazhdanam/semyam_s_detmi/edinoe_posobie/')">
+          <img src="https://sfr.gov.ru/data/mainpage/b3e4e52b-7e97-4a52-963c-fb5cfc103611-small.jpg"
+               alt="Единое пособие" onerror="this.style.display='none'"/>
+          <div class="slc-label">Единое детское пособие</div>
+        </div>
+        <div class="sfr-link-card" onclick="openExternal('https://sfr.gov.ru/grazhdanam/semyam_s_detmi/materinskij_kapital')">
+          <img src="https://sfr.gov.ru/data/mainpage/a187304a-acc3-464a-853a-5bb0dad713cd-small.jpg"
+               alt="Маткапитал" onerror="this.style.display='none'"/>
+          <div class="slc-label">Материнский капитал</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="foot-note">Данные не сохраняются. Результат носит информационный характер.</p>
+  </div>
+
+  <!-- ──── S1: Citizenship ──── -->
+  <div class="screen" id="s1">
+    <div class="step-icon">🇷🇺</div>
+    <div class="step-q">Вы — гражданин Российской Федерации?</div>
+    <div class="step-hint">Выплата предоставляется только гражданам РФ, проживающим на территории России.</div>
+    <div class="opts">
+      <div class="opt" onclick="ans('citizen', true)">
+        <div class="opt-icon">✅</div>
+        <div class="opt-body"><div class="opt-label">Да, гражданин РФ</div></div>
+      </div>
+      <div class="opt" onclick="ans('citizen', false)">
+        <div class="opt-icon">🚫</div>
+        <div class="opt-body"><div class="opt-label">Нет</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── S2: Children count ──── -->
+  <div class="screen" id="s2">
+    <div class="step-icon">👶</div>
+    <div class="step-q">Сколько у вас детей до 18 лет?</div>
+    <div class="step-hint">Также учитываются дети 18–23 лет, обучающиеся по очной форме и не состоящие в браке.</div>
+    <div class="npicker">
+      <button class="np-btn" id="npMinus" onclick="chC(-1)" disabled>−</button>
+      <input class="np-val" id="npVal" value="0" readonly/>
+      <button class="np-btn" onclick="chC(1)">+</button>
+    </div>
+    <div class="info-box">
+      💡 Для получения выплаты необходимо иметь <b>не менее 2 детей</b>.
+    </div>
+    <button class="btn-primary" id="childContinueBtn" onclick="submitChildren()" disabled>Продолжить →</button>
+  </div>
+
+  <!-- ──── S3: Region ──── -->
+  <div class="screen" id="s3">
+    <div class="step-icon">📍</div>
+    <div class="step-q">Выберите регион проживания</div>
+    <div class="step-hint">Порог дохода для получения выплаты рассчитывается по прожиточному минимуму трудоспособного населения вашего региона.</div>
+    <div class="region-wrap" id="regionWrap">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="regionSearch" placeholder="Введите название региона..." oninput="filterRegions()" autocomplete="off"/>
+      </div>
+      <div class="region-list" id="regionList"></div>
+    </div>
+    <div id="regionSelectedWrap" style="display:none">
+      <div class="region-selected-box" id="regionSelectedBox">
+        <span>📍</span>
+        <span id="regionSelectedName"></span>
+        <button onclick="clearRegion()">✕</button>
+      </div>
+    </div>
+    <button class="btn-primary" id="regionContinueBtn" onclick="go(4)" disabled>Продолжить →</button>
+  </div>
+
+  <!-- ──── S4: Applicant employment ──── -->
+  <div class="screen" id="s4">
+    <div class="step-icon">💼</div>
+    <div class="step-q">Ваш вид занятости в 2025 году</div>
+    <div class="step-hint">Для получения выплаты необходимо, чтобы с вашего дохода удерживался <b>НДФЛ по ставке 13%</b>.</div>
+    <div class="opts">
+      <div class="opt" onclick="ans('myWork', 'ndfl')">
+        <div class="opt-icon">👔</div>
+        <div class="opt-body">
+          <div class="opt-label">Официальная работа по трудовому договору</div>
+          <div class="opt-sub">Работодатель удерживает НДФЛ 13% с зарплаты</div>
+        </div>
+      </div>
+      <div class="opt" onclick="ans('myWork', 'ndfl')">
+        <div class="opt-icon">📋</div>
+        <div class="opt-body">
+          <div class="opt-label">ГПХ / авторские договоры / аренда</div>
+          <div class="opt-sub">Доход облагается НДФЛ 13%</div>
+        </div>
+      </div>
+      <div class="opt" onclick="ans('myWork', 'no_ndfl')">
+        <div class="opt-icon">🧾</div>
+        <div class="opt-body">
+          <div class="opt-label">Самозанятый (НПД) или ИП на УСН/патенте</div>
+          <div class="opt-sub">НДФЛ 13% не уплачивается — выплата не положена</div>
+        </div>
+      </div>
+      <div class="opt" onclick="ans('myWork', 'no_ndfl')">
+        <div class="opt-icon">🚫</div>
+        <div class="opt-body">
+          <div class="opt-label">Безработный или неофициальная занятость</div>
+          <div class="opt-sub">Нет налогооблагаемого дохода по ставке 13%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── S5: Spouse employment ──── -->
+  <div class="screen" id="s5">
+    <div class="step-icon">👫</div>
+    <div class="step-q">Ситуация с супругом(ой)</div>
+    <div class="step-hint">Выплата рассчитывается отдельно для каждого из работающих родителей. Оба могут получить её одновременно.</div>
+    <div class="opts">
+      <div class="opt" onclick="ans('spouseWork', 'ndfl')">
+        <div class="opt-icon">✅</div>
+        <div class="opt-body">
+          <div class="opt-label">Работает официально с НДФЛ 13%</div>
+          <div class="opt-sub">Супруг тоже сможет подать заявление отдельно</div>
+        </div>
+      </div>
+      <div class="opt" onclick="ans('spouseWork', 'no_ndfl')">
+        <div class="opt-icon">➖</div>
+        <div class="opt-body">
+          <div class="opt-label">Самозанятый, ИП на УСН, безработный</div>
+          <div class="opt-sub">Супруг не сможет получить выплату</div>
+        </div>
+      </div>
+      <div class="opt" onclick="ans('spouseWork', 'single')">
+        <div class="opt-icon">🧑‍🍼</div>
+        <div class="opt-body">
+          <div class="opt-label">Я воспитываю детей один(а)</div>
+          <div class="opt-sub">Единственный родитель, вдовец/вдова</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── S6: Family income ──── -->
+  <div class="screen" id="s6">
+    <div class="step-icon">💰</div>
+    <div class="step-q">Доходы семьи за 2025 год</div>
+    <div class="step-hint">Введите суммарный годовой доход всей семьи и количество членов семьи — для расчёта среднедушевого дохода.</div>
+
+    <div id="thresholdInfo" class="threshold-box"></div>
+
+    <div class="income-group">
+      <div class="income-label">Суммарный доход семьи за год, ₽</div>
+      <div class="income-input-wrap">
+        <input type="number" id="totalIncome" placeholder="например, 1 200 000" min="0" oninput="updateCalc()"/>
+        <span>₽</span>
+      </div>
+    </div>
+
+    <div class="income-group">
+      <div class="income-label">Количество человек в семье (включая детей)</div>
+      <div class="npicker">
+        <button class="np-btn" id="famMinus" onclick="chF(-1)" disabled>−</button>
+        <input class="np-val" id="famVal" value="3" readonly/>
+        <button class="np-btn" onclick="chF(1)">+</button>
+      </div>
+    </div>
+
+    <div id="incomeCheck" style="display:none"></div>
+
+    <button class="btn-primary" id="incomeContinueBtn" onclick="go(7)" disabled>Продолжить →</button>
+  </div>
+
+  <!-- ──── S7: Alimony ──── -->
+  <div class="screen" id="s7">
+    <div class="step-icon">⚖️</div>
+    <div class="step-q">Есть ли у вас задолженность по алиментам?</div>
+    <div class="step-hint">Наличие подтверждённого долга по алиментам является основанием для отказа в выплате.</div>
+    <div class="opts">
+      <div class="opt" onclick="ans('alimony', false)">
+        <div class="opt-icon">✅</div>
+        <div class="opt-body"><div class="opt-label">Нет задолженности</div></div>
+      </div>
+      <div class="opt" onclick="ans('alimony', true)">
+        <div class="opt-icon">❌</div>
+        <div class="opt-body"><div class="opt-label">Есть задолженность по алиментам</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── RESULT: YES ──── -->
+  <div class="screen" id="r-yes">
+    <div class="result-hero yes">
+      <div class="result-emoji">🎉</div>
+      <div class="result-title">Вы имеете право на выплату!</div>
+      <div class="result-body" id="rYesBody">По указанным данным вы соответствуете условиям ежегодной семейной выплаты.</div>
+    </div>
+
+    <!-- Calculator -->
+    <div class="calc-box">
+      <h3>Рассчитайте вашу выплату (7% от НДФЛ)</h3>
+      <div class="calc-field">
+        <label>Ваш годовой доход (с которого удержан НДФЛ 13%), ₽</label>
+        <input type="number" id="calcIncome1" placeholder="например, 840 000" oninput="calcPayment()"/>
+      </div>
+      <div class="calc-field" id="calcIncome2Wrap" style="display:none">
+        <label>Годовой доход супруга (с НДФЛ 13%), ₽</label>
+        <input type="number" id="calcIncome2" placeholder="например, 600 000" oninput="calcPayment()"/>
+      </div>
+      <div class="calc-result-row">
+        <span class="cr-label">Ориентировочная выплата в год:</span>
+        <span class="cr-val" id="calcResult">—</span>
+      </div>
+      <div class="calc-note" id="calcNote">Введите доход выше для расчёта. Фактическую сумму определяет СФР по данным ФНС.</div>
+    </div>
+
+    <!-- Баннер СФР с сайта sfr.gov.ru -->
+    <div class="sfr-banner" style="aspect-ratio:16/6;">
+      <img src="https://sfr.gov.ru/data/mainpage/c8760105-b7ae-4eeb-8bd6-1d816bc687b2-small.png"
+           alt="СФР" onerror="this.parentElement.style.background='linear-gradient(135deg,#16a34a,#15803d)';this.style.display='none'"/>
+      <div class="sfr-banner-caption">Подайте заявление через Госуслуги с 1 июня по 1 октября 2026</div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">📎</div>
+        <div><b>Что потребуется</b>Паспорт, СНИЛС, свидетельства о рождении детей. Справки о доходах СФР запросит у ФНС самостоятельно.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🖥️</div>
+        <div><b>Где подать заявление</b>Госуслуги → «Ежегодная семейная выплата», МФЦ или клиентская служба СФР.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📅</div>
+        <div><b>Срок подачи</b>С 1 июня по 1 октября 2026 года (за доходы 2025 года). После 1 октября заявления не принимаются.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⏱️</div>
+        <div><b>Срок рассмотрения</b>Устанавливается регламентом СФР (Постановление Правительства РФ № 2173). Точные сроки выплаты уточняйте на сайте СФР.</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="openGU()">Подать заявление на Госуслугах →</button>
+    <button class="btn-secondary" onclick="restart()">Пройти ещё раз</button>
+    <p class="foot-note">⚠️ Результат носит информационный характер. Окончательное решение принимает СФР.</p>
+  </div>
+
+  <!-- ──── RESULT: NO ──── -->
+  <div class="screen" id="r-no">
+    <div class="result-hero no">
+      <div class="result-emoji">😔</div>
+      <div class="result-title">Выплата не положена</div>
+      <div class="result-body">По указанным данным вы не соответствуете условиям выплаты.</div>
+    </div>
+
+    <div class="cards" id="noReasons"></div>
+
+    <!-- Другие выплаты с картинками sfr.gov.ru -->
+    <p style="font-size:12px;color:var(--hint);font-weight:600;">ДРУГИЕ ВЫПЛАТЫ СФР ДЛЯ СЕМЕЙ</p>
+    <div class="sfr-links-row">
+      <div class="sfr-link-card" onclick="openExternal('https://sfr.gov.ru/grazhdanam/semyam_s_detmi/edinoe_posobie/')">
+        <img src="https://sfr.gov.ru/data/mainpage/b3e4e52b-7e97-4a52-963c-fb5cfc103611-small.jpg"
+             alt="Единое пособие" onerror="this.parentElement.style.background='var(--secondary-bg)';this.style.display='none'"/>
+        <div class="slc-label">Единое детское пособие</div>
+      </div>
+      <div class="sfr-link-card" onclick="openExternal('https://sfr.gov.ru/grazhdanam/semyam_s_detmi/materinskij_kapital')">
+        <img src="https://sfr.gov.ru/data/mainpage/a187304a-acc3-464a-853a-5bb0dad713cd-small.jpg"
+             alt="Маткапитал" onerror="this.parentElement.style.background='var(--secondary-bg)';this.style.display='none'"/>
+        <div class="slc-label">Материнский капитал</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="openGU2()">Все выплаты семьям на Госуслугах →</button>
+    <button class="btn-secondary" onclick="restart()">Пройти ещё раз</button>
+    <p class="foot-note">⚠️ Обратитесь в СФР для точной консультации: <b>8-800-10-000-01</b></p>
+  </div>
+
+  <!-- ──── RESULT: MAYBE ──── -->
+  <div class="screen" id="r-maybe">
+    <div class="result-hero maybe">
+      <div class="result-emoji">🤔</div>
+      <div class="result-title">Требуется уточнение</div>
+      <div class="result-body" id="rMaybeBody">По некоторым критериям ситуация требует дополнительной проверки.</div>
+    </div>
+
+    <div class="cards" id="maybeReasons"></div>
+
+    <div class="card">
+      <div class="card-icon">📞</div>
+      <div><b>Рекомендуем обратиться в СФР</b>Горячая линия: <b>8-800-10-000-01</b> (бесплатно). Или лично в клиентскую службу по месту жительства.</div>
+    </div>
+
+    <button class="btn-primary" onclick="openGU()">Подать заявление на Госуслугах →</button>
+    <button class="btn-secondary" onclick="restart()">Пройти ещё раз</button>
+    <p class="foot-note">⚠️ Окончательное решение принимает СФР на основе данных ФНС и других ведомств.</p>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ──── Telegram ────
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  const tp = tg.themeParams || {};
+  const set = (v, c) => document.documentElement.style.setProperty(v, c);
+  if (tp.bg_color)          set('--bg', tp.bg_color);
+  if (tp.text_color)        set('--text', tp.text_color);
+  if (tp.hint_color)        set('--hint', tp.hint_color);
+  if (tp.button_color)    { set('--blue', tp.button_color); set('--btn', tp.button_color); }
+  if (tp.secondary_bg_color) set('--secondary-bg', tp.secondary_bg_color);
+}
+
+// ──── REGIONS (ПМ трудоспособного населения 2026, руб/мес) ────
+const REGIONS = {
+  'Алтайский край': 18373,
+  'Амурская область': 23740,
+  'Архангельская область': 23946,
+  'Астраханская область': 19068,
+  'Белгородская область': 17547,
+  'Брянская область': 17960,
+  'Владимирская область': 18373,
+  'Волгоградская область': 18373,
+  'Вологодская область': 20230,
+  'Воронежская область': 17547,
+  'Донецкая Народная Республика': 20644,
+  'Еврейская автономная область': 25805,
+  'Забайкальский край': 22502,
+  'Запорожская область': 20644,
+  'Ивановская область': 18166,
+  'Иркутская область': 22502,
+  'Кабардино-Балкарская Республика': 22089,
+  'Калининградская область': 19611,
+  'Калужская область': 18579,
+  'Камчатский край': 38000,
+  'Карачаево-Черкесская Республика': 19405,
+  'Кемеровская область — Кузбасс': 20644,
+  'Кировская область': 18166,
+  'Костромская область': 18166,
+  'Краснодарский край': 19817,
+  'Красноярский край': 22914,
+  'Курганская область': 18166,
+  'Курская область': 17547,
+  'Ленинградская область': 22502,
+  'Липецкая область': 17547,
+  'Луганская Народная Республика': 20644,
+  'Магаданская область': 42000,
+  'Московская область': 24565,
+  'Мурманская область': 29000,
+  'Ненецкий автономный округ': 35000,
+  'Нижегородская область': 18373,
+  'Новгородская область': 19611,
+  'Новосибирская область': 20230,
+  'Омская область': 18579,
+  'Оренбургская область': 18373,
+  'Орловская область': 17960,
+  'Пензенская область': 17547,
+  'Пермский край': 19817,
+  'Приморский край': 24565,
+  'Псковская область': 19611,
+  'Республика Адыгея': 17754,
+  'Республика Алтай': 19611,
+  'Республика Башкортостан': 18373,
+  'Республика Бурятия': 22502,
+  'Республика Дагестан': 18785,
+  'Республика Ингушетия': 19405,
+  'Республика Калмыкия': 20230,
+  'Республика Карелия': 22685,
+  'Республика Коми': 23740,
+  'Республика Крым': 20230,
+  'Республика Марий Эл': 18166,
+  'Республика Мордовия': 17547,
+  'Республика Саха (Якутия)': 36471,
+  'Республика Северная Осетия — Алания': 18579,
+  'Республика Татарстан': 17547,
+  'Республика Тыва': 20850,
+  'Республика Хакасия': 21057,
+  'Ростовская область': 18785,
+  'Рязанская область': 18373,
+  'Самарская область': 19611,
+  'Саратовская область': 17960,
+  'Сахалинская область': 30000,
+  'Свердловская область': 20644,
+  'Смоленская область': 18373,
+  'Ставропольский край': 18579,
+  'Тамбовская область': 17547,
+  'Тверская область': 19611,
+  'Томская область': 21057,
+  'Тульская область': 18373,
+  'Тюменская область': 21057,
+  'Удмуртская Республика': 18373,
+  'Ульяновская область': 18373,
+  'Хабаровский край': 25186,
+  'Ханты-Мансийский АО — Югра': 28000,
+  'Херсонская область': 20644,
+  'Челябинская область': 20230,
+  'Чеченская Республика': 19817,
+  'Чувашская Республика': 17960,
+  'Чукотский автономный округ': 49431,
+  'Ямало-Ненецкий АО': 35000,
+  'Ярославская область': 19817,
+  'г. Байконур': 20644,
+  'г. Москва': 28940,
+  'г. Санкт-Петербург': 24565,
+  'г. Севастополь': 20644,
+};
+
+const REGION_NAMES = Object.keys(REGIONS).sort();
+
+// ──── State ────
+const S = {
+  citizen: null,
+  children: 0,
+  region: null,
+  myWork: null,
+  spouseWork: null,
+  totalIncome: 0,
+  famSize: 3,
+  alimony: null,
+};
+let curScreen = 0;
+const TOTAL = 7;
+let childCount = 0;
+let famCount = 3;
+
+// ──── Navigation ────
+function go(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('s' + n) || document.getElementById(n);
+  if (el) { el.classList.add('active'); curScreen = n; }
+  const isStep = typeof n === 'number' && n >= 1 && n <= TOTAL;
+  document.getElementById('progWrap').style.opacity = isStep ? '1' : '0';
+  if (isStep) {
+    document.getElementById('progFill').style.width = Math.round((n / TOTAL) * 100) + '%';
+    document.getElementById('progLabel').textContent = n + ' / ' + TOTAL;
+  }
+  window.scrollTo(0, 0);
+}
+
+function showResult(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('progWrap').style.opacity = '0';
+  window.scrollTo(0, 0);
+}
+
+// ──── Answer handler ────
+function ans(field, val) {
+  S[field] = val;
+  if (field === 'citizen') {
+    if (!val) { buildNo(['Выплата предоставляется только гражданам Российской Федерации.']); showResult('r-no'); }
+    else go(2);
+  } else if (field === 'myWork') {
+    if (val === 'no_ndfl') { buildNo(['С вашего дохода не удерживается НДФЛ по ставке 13%. Выплата рассчитывается именно как возврат 7% от уплаченного НДФЛ, поэтому самозанятые (НПД), ИП на УСН и безработные не имеют права на неё.']); showResult('r-no'); }
+    else go(5);
+  } else if (field === 'spouseWork') {
+    updateIncomeScreen();
+    go(6);
+  } else if (field === 'alimony') {
+    if (val) { buildNo(['Наличие задолженности по алиментам является основанием для отказа в выплате. После погашения долга право на выплату может восстановиться.']); showResult('r-no'); }
+    else calcResult();
+  }
+}
+
+// ──── Children counter ────
+function chC(d) {
+  childCount = Math.max(0, Math.min(10, childCount + d));
+  document.getElementById('npVal').value = childCount;
+  document.getElementById('npMinus').disabled = childCount === 0;
+  document.getElementById('childContinueBtn').disabled = childCount < 2;
+}
+function submitChildren() {
+  S.children = childCount;
+  if (childCount < 2) {
+    buildNo(['Выплата положена только при наличии двух и более детей до 18 лет (или до 23 лет при очном обучении). У вас указан ' + childCount + ' ребёнок.']);
+    showResult('r-no');
+  } else go(3);
+}
+
+// ──── Family size counter ────
+function chF(d) {
+  famCount = Math.max(2, Math.min(15, famCount + d));
+  S.famSize = famCount;
+  document.getElementById('famVal').value = famCount;
+  document.getElementById('famMinus').disabled = famCount === 2;
+  updateCalc();
+}
+
+// ──── Region ────
+function renderRegions(filter) {
+  const list = document.getElementById('regionList');
+  const q = (filter || '').toLowerCase();
+  const items = REGION_NAMES.filter(r => !q || r.toLowerCase().includes(q));
+  list.innerHTML = items.map(r => {
+    const pm = REGIONS[r];
+    const thresh = Math.round(pm * 1.5);
+    const sel = S.region === r ? ' selected' : '';
+    return `<div class="region-item${sel}" onclick="selectRegion('${r.replace(/'/g,"\\'")}')">
+      <span>${r}</span>
+      <span class="ri-pm">ПМ ${fmt(pm)} ₽</span>
+    </div>`;
+  }).join('') || '<div style="padding:12px 14px;color:var(--hint);font-size:13px">Регион не найден</div>';
+}
+function filterRegions() {
+  renderRegions(document.getElementById('regionSearch').value);
+}
+function selectRegion(name) {
+  S.region = name;
+  document.getElementById('regionWrap').style.display = 'none';
+  document.getElementById('regionSelectedWrap').style.display = 'block';
+  document.getElementById('regionSelectedName').textContent = name;
+  document.getElementById('regionContinueBtn').disabled = false;
+  renderRegions();
+}
+function clearRegion() {
+  S.region = null;
+  document.getElementById('regionWrap').style.display = 'block';
+  document.getElementById('regionSelectedWrap').style.display = 'none';
+  document.getElementById('regionContinueBtn').disabled = true;
+  document.getElementById('regionSearch').value = '';
+  renderRegions();
+}
+
+// ──── Income screen ────
+function updateIncomeScreen() {
+  if (!S.region) return;
+  const pm = REGIONS[S.region];
+  const thresh = pm * 1.5;
+  const threshYear = thresh * 12;
+  document.getElementById('thresholdInfo').innerHTML =
+    `<b>📌 Порог для вашего региона</b><br>
+     Прожиточный минимум трудоспособного (${S.region}): <b>${fmt(pm)} ₽/мес</b><br>
+     1,5 × ПМ = <b>${fmt(Math.round(thresh))} ₽/чел/мес</b><br>
+     Среднедушевой доход семьи должен быть <b>не выше этого значения</b>.`;
+  // Show spouse income field in calculator
+  const showSpouse = S.spouseWork === 'ndfl';
+  document.getElementById('calcIncome2Wrap').style.display = showSpouse ? 'block' : 'none';
+}
+
+function updateCalc() {
+  const val = parseFloat(document.getElementById('totalIncome').value) || 0;
+  S.totalIncome = val;
+  const pm = S.region ? REGIONS[S.region] : 20644;
+  const thresh = pm * 1.5 * 12 * S.famSize; // annual threshold for whole family
+  const monthlyPC = val > 0 ? val / S.famSize / 12 : 0;
+  const limit = pm * 1.5;
+
+  let checkHTML = '';
+  if (val > 0) {
+    const ok = monthlyPC <= limit;
+    const icon = ok ? '✅' : '❌';
+    const color = ok ? 'var(--green)' : 'var(--red)';
+    checkHTML = `<div style="background:var(--secondary-bg);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;line-height:1.5;">
+      ${icon} Среднедушевой доход: <b style="color:${color}">${fmt(Math.round(monthlyPC))} ₽/мес</b><br>
+      ${ok ? `Не превышает порог ${fmt(Math.round(limit))} ₽ — <b style="color:var(--green)">условие выполнено</b>` :
+              `Превышает порог ${fmt(Math.round(limit))} ₽ — <b style="color:var(--red)">условие не выполнено</b>`}
+    </div>`;
+    document.getElementById('incomeContinueBtn').disabled = false;
+  } else {
+    document.getElementById('incomeContinueBtn').disabled = true;
+  }
+  const el = document.getElementById('incomeCheck');
+  el.style.display = checkHTML ? 'block' : 'none';
+  el.innerHTML = checkHTML;
+}
+
+// ──── Calc payment ────
+function calcPayment() {
+  const i1 = parseFloat(document.getElementById('calcIncome1').value) || 0;
+  const i2 = parseFloat(document.getElementById('calcIncome2')?.value) || 0;
+  const total = (i1 + i2) * 0.07;
+  const el = document.getElementById('calcResult');
+  const note = document.getElementById('calcNote');
+  if (total > 0) {
+    el.textContent = fmt(Math.round(total)) + ' ₽';
+    note.textContent = `≈ ${fmt(Math.round(i1 * 0.07))} ₽ (вам)` +
+      (i2 > 0 ? ` + ${fmt(Math.round(i2 * 0.07))} ₽ (супругу)` : '') +
+      '. Фактическую сумму определяет СФР по данным ФНС.';
+  } else {
+    el.textContent = '—';
+    note.textContent = 'Введите годовой доход выше для расчёта.';
+  }
+}
+
+// ──── Eligibility ────
+function calcResult() {
+  const pm = S.region ? REGIONS[S.region] : 20644;
+  const limit = pm * 1.5;
+  const monthlyPC = S.totalIncome > 0 ? S.totalIncome / S.famSize / 12 : 0;
+  const incomeOk = S.totalIncome > 0 ? monthlyPC <= limit : null;
+
+  const blockers = [];
+  const warnings = [];
+
+  if (!incomeOk && incomeOk !== null) {
+    blockers.push(`Среднедушевой доход семьи (${fmt(Math.round(monthlyPC))} ₽/мес) превышает допустимый порог 1,5 × ПМ = ${fmt(Math.round(limit))} ₽/мес для ${S.region}.`);
+  }
+
+  if (blockers.length > 0) {
+    buildNo(blockers);
+    showResult('r-no');
+    return;
+  }
+
+  // Yes — show result
+  const spouseNote = S.spouseWork === 'ndfl'
+    ? 'Ваш супруг(а) также может подать заявление отдельно — выплата рассчитывается для каждого.'
+    : S.spouseWork === 'single'
+    ? 'Как единственному родителю, выплата рассчитывается по вашему доходу.'
+    : 'Супруг(а) не имеет права на выплату, но вы сами можете её получить.';
+
+  document.getElementById('rYesBody').textContent = spouseNote;
+  document.getElementById('calcIncome2Wrap').style.display = S.spouseWork === 'ndfl' ? 'block' : 'none';
+  showResult('r-yes');
+}
+
+// ──── Build reason cards ────
+function buildNo(reasons) {
+  document.getElementById('noReasons').innerHTML = reasons.map(r =>
+    `<div class="card blocked"><div class="card-icon">❌</div><div>${r}</div></div>`
+  ).join('');
+}
+function buildMaybe(reasons) {
+  document.getElementById('maybeReasons').innerHTML = reasons.map(r =>
+    `<div class="card"><div class="card-icon">⚠️</div><div>${r}</div></div>`
+  ).join('');
+}
+
+// ──── Format number ────
+function fmt(n) {
+  return n.toLocaleString('ru-RU');
+}
+
+// ──── External links ────
+function openGU() {
+  const url = 'https://www.gosuslugi.ru/600229/1';
+  tg ? tg.openLink(url) : window.open(url, '_blank');
+}
+function openGU2() {
+  const url = 'https://www.gosuslugi.ru/category/family';
+  tg ? tg.openLink(url) : window.open(url, '_blank');
+}
+function openExternal(url) {
+  tg ? tg.openLink(url) : window.open(url, '_blank');
+}
+
+// ──── Restart ────
+function restart() {
+  Object.assign(S, { citizen: null, children: 0, region: null, myWork: null, spouseWork: null, totalIncome: 0, famSize: 3, alimony: null });
+  childCount = 0; famCount = 3;
+  document.getElementById('npVal').value = 0;
+  document.getElementById('npMinus').disabled = true;
+  document.getElementById('childContinueBtn').disabled = true;
+  document.getElementById('famVal').value = 3;
+  document.getElementById('famMinus').disabled = true;
+  document.getElementById('totalIncome').value = '';
+  document.getElementById('incomeCheck').style.display = 'none';
+  document.getElementById('incomeContinueBtn').disabled = true;
+  clearRegion();
+  go(0);
+  document.getElementById('progWrap').style.opacity = '0';
+}
+
+// ──── Init ────
+renderRegions();
+</script>
+</body>
+</html>
