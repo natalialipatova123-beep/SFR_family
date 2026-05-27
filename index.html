@@ -1123,4 +1123,95 @@ function calcPayment() {
   const note = document.getElementById('calcNote');
   if (total > 0) {
     el.textContent = fmt(Math.round(total)) + ' ₽';
-    note.textContent = '≈ ' + fmt(Math.round(i1
+    note.textContent = '≈ ' + fmt(Math.round(i1 * diff / 100)) + ' ₽ (вам)' +
+      (i2 > 0 ? ' + ' + fmt(Math.round(i2 * diff / 100)) + ' ₽ (супругу)' : '') +
+      '. Фактическую сумму определяет СФР по данным ФНС.';
+  } else {
+    el.textContent = '—';
+    note.textContent = 'Введите годовой доход выше для расчёта.';
+  }
+}
+
+// ──── Eligibility ────
+function calcResult() {
+  const pm = S.region ? REGIONS[S.region] : 20644;
+  const limit = pm * 1.5;
+  const monthlyPC = S.totalIncome > 0 ? S.totalIncome / S.famSize / 12 : 0;
+  const incomeOk = S.totalIncome > 0 ? monthlyPC <= limit : null;
+
+  const blockers = [];
+  const warnings = [];
+
+  if (!incomeOk && incomeOk !== null) {
+    blockers.push(`Среднедушевой доход семьи (${fmt(Math.round(monthlyPC))} ₽/мес) превышает допустимый порог 1,5 × ПМ = ${fmt(Math.round(limit))} ₽/мес для ${S.region}.`);
+  }
+
+  if (blockers.length > 0) {
+    buildNo(blockers);
+    showResult('r-no');
+    return;
+  }
+
+  // Yes — show result
+  const spouseNote = S.spouseWork === 'ndfl'
+    ? 'Ваш супруг(а) также может подать заявление отдельно — выплата рассчитывается для каждого.'
+    : S.spouseWork === 'single'
+    ? 'Как единственному родителю, выплата рассчитывается по вашему доходу.'
+    : 'Супруг(а) не имеет права на выплату, но вы сами можете её получить.';
+
+  document.getElementById('rYesBody').textContent = spouseNote;
+  document.getElementById('calcIncome2Wrap').style.display = S.spouseWork === 'ndfl' ? 'block' : 'none';
+  showResult('r-yes');
+}
+
+// ──── Build reason cards ────
+function buildNo(reasons) {
+  document.getElementById('noReasons').innerHTML = reasons.map(r =>
+    `<div class="card blocked"><div class="card-icon">❌</div><div>${r}</div></div>`
+  ).join('');
+}
+function buildMaybe(reasons) {
+  document.getElementById('maybeReasons').innerHTML = reasons.map(r =>
+    `<div class="card"><div class="card-icon">⚠️</div><div>${r}</div></div>`
+  ).join('');
+}
+
+// ──── Format number ────
+function fmt(n) {
+  return n.toLocaleString('ru-RU');
+}
+
+// ──── External links ────
+function openGU() {
+  const url = 'https://www.gosuslugi.ru/600229/1';
+  tg ? tg.openLink(url) : window.open(url, '_blank');
+}
+function openGU2() {
+  const url = 'https://www.gosuslugi.ru/category/family';
+  tg ? tg.openLink(url) : window.open(url, '_blank');
+}
+function openExternal(url) {
+  tg ? tg.openLink(url) : window.open(url, '_blank');
+}
+
+// ──── Restart ────
+function restart() {
+  Object.assign(S, { citizen: null, children: 0, region: null, myWork: null, spouseWork: null, totalIncome: 0, famSize: 3, alimony: null });
+  childCount = 0; famCount = 3;
+  document.getElementById('npVal').value = 0;
+  document.getElementById('npMinus').disabled = true;
+  document.getElementById('childContinueBtn').disabled = true;
+  document.getElementById('famVal').value = 3;
+  document.getElementById('famMinus').disabled = true;
+  document.getElementById('totalIncome').value = '';
+  document.getElementById('incomeCheck').style.display = 'none';
+  document.getElementById('incomeContinueBtn').disabled = true;
+  clearRegion();
+  go(0);
+  document.getElementById('progWrap').style.opacity = '0';
+}
+
+renderRegions();
+</script>
+</body>
+</html>
