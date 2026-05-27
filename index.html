@@ -580,34 +580,34 @@
   <div class="screen" id="s4">
     <div class="step-icon">💼</div>
     <div class="step-q">Ваш вид занятости в 2025 году</div>
-    <div class="step-hint">Для получения выплаты необходимо, чтобы с вашего дохода удерживался <b>НДФЛ по ставке 13%</b>.</div>
+    <div class="step-hint">Для получения выплаты необходимо, чтобы с вашего дохода удерживался <b>НДФЛ</b>.</div>
     <div class="opts">
       <div class="opt" onclick="ans('myWork', 'ndfl')">
         <div class="opt-icon">👔</div>
         <div class="opt-body">
           <div class="opt-label">Официальная работа по трудовому договору</div>
-          <div class="opt-sub">Работодатель удерживает НДФЛ 13% с зарплаты</div>
+          <div class="opt-sub">Работодатель удерживает НДФЛ с зарплаты</div>
         </div>
       </div>
       <div class="opt" onclick="ans('myWork', 'ndfl')">
         <div class="opt-icon">📋</div>
         <div class="opt-body">
           <div class="opt-label">ГПХ / авторские договоры / аренда</div>
-          <div class="opt-sub">Доход облагается НДФЛ 13%</div>
+          <div class="opt-sub">Доход облагается НДФЛ</div>
         </div>
       </div>
       <div class="opt" onclick="ans('myWork', 'no_ndfl')">
         <div class="opt-icon">🧾</div>
         <div class="opt-body">
           <div class="opt-label">Самозанятый (НПД) или ИП на УСН/патенте</div>
-          <div class="opt-sub">НДФЛ 13% не уплачивается — выплата не положена</div>
+          <div class="opt-sub">НДФЛ не уплачивается — выплата не положена</div>
         </div>
       </div>
       <div class="opt" onclick="ans('myWork', 'no_ndfl')">
         <div class="opt-icon">🚫</div>
         <div class="opt-body">
           <div class="opt-label">Безработный или неофициальная занятость</div>
-          <div class="opt-sub">Нет налогооблагаемого дохода по ставке 13%</div>
+          <div class="opt-sub">Нет налогооблагаемого дохода</div>
         </div>
       </div>
     </div>
@@ -622,7 +622,7 @@
       <div class="opt" onclick="ans('spouseWork', 'ndfl')">
         <div class="opt-icon">✅</div>
         <div class="opt-body">
-          <div class="opt-label">Работает официально с НДФЛ 13%</div>
+          <div class="opt-label">Работает официально с уплатой НДФЛ</div>
           <div class="opt-sub">Супруг тоже сможет подать заявление отдельно</div>
         </div>
       </div>
@@ -700,13 +700,25 @@
 
     <!-- Calculator -->
     <div class="calc-box">
-      <h3>Рассчитайте вашу выплату (7% от НДФЛ)</h3>
+      <h3>Рассчитайте вашу выплату (7% от дохода)</h3>
       <div class="calc-field">
-        <label>Ваш годовой доход (с которого удержан НДФЛ 13%), ₽</label>
+        <label>Ваша ставка НДФЛ</label>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;font-weight:400;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;flex:1;justify-content:center;" id="rate1label">
+            <input type="radio" name="ndflRate" value="13" checked onchange="calcPayment()" style="accent-color:var(--blue);width:16px;height:16px;"/> 13%
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;font-weight:400;padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;flex:1;justify-content:center;" id="rate2label">
+            <input type="radio" name="ndflRate" value="15" onchange="calcPayment()" style="accent-color:var(--blue);width:16px;height:16px;"/> 15%
+          </label>
+        </div>
+        <div id="rateHint" style="font-size:12px;color:var(--hint);margin-top:6px;">13% — доход до 2,4 млн ₽ в год. В обоих случаях выплата = 7% от дохода (льготная ставка: 6% или 8% соответственно).</div>
+      </div>
+      <div class="calc-field">
+        <label>Ваш годовой доход (с которого удержан НДФЛ), ₽</label>
         <input type="number" id="calcIncome1" placeholder="например, 840 000" oninput="calcPayment()"/>
       </div>
       <div class="calc-field" id="calcIncome2Wrap" style="display:none">
-        <label>Годовой доход супруга (с НДФЛ 13%), ₽</label>
+        <label>Годовой доход супруга (с НДФЛ), ₽</label>
         <input type="number" id="calcIncome2" placeholder="например, 600 000" oninput="calcPayment()"/>
       </div>
       <div class="calc-result-row">
@@ -1071,13 +1083,21 @@ function updateCalc() {
 function calcPayment() {
   const i1 = parseFloat(document.getElementById('calcIncome1').value) || 0;
   const i2 = parseFloat(document.getElementById('calcIncome2')?.value) || 0;
-  const total = (i1 + i2) * 0.07;
+  const rateEl = document.querySelector('input[name="ndflRate"]:checked');
+  const rate = rateEl ? parseInt(rateEl.value) : 13;
+  const льготная = rate === 15 ? 8 : 6;
+  const diff = rate - льготная; // всегда 7
+  const hint = document.getElementById('rateHint');
+  if (hint) hint.textContent = rate === 15
+    ? `15% — доход свыше 2,4 млн ₽ в год. Льготная ставка ${льготная}%. Выплата = ${diff}% от дохода.`
+    : `13% — доход до 2,4 млн ₽ в год. В обоих случаях выплата = 7% от дохода (льготная ставка: 6% или 8% соответственно).`;
+  const total = (i1 + i2) * (diff / 100);
   const el = document.getElementById('calcResult');
   const note = document.getElementById('calcNote');
   if (total > 0) {
     el.textContent = fmt(Math.round(total)) + ' ₽';
-    note.textContent = `≈ ${fmt(Math.round(i1 * 0.07))} ₽ (вам)` +
-      (i2 > 0 ? ` + ${fmt(Math.round(i2 * 0.07))} ₽ (супругу)` : '') +
+    note.textContent = `≈ ${fmt(Math.round(i1 * diff / 100))} ₽ (вам)` +
+      (i2 > 0 ? ` + ${fmt(Math.round(i2 * diff / 100))} ₽ (супругу)` : '') +
       '. Фактическую сумму определяет СФР по данным ФНС.';
   } else {
     el.textContent = '—';
@@ -1112,60 +1132,4 @@ function calcResult() {
     ? 'Как единственному родителю, выплата рассчитывается по вашему доходу.'
     : 'Супруг(а) не имеет права на выплату, но вы сами можете её получить.';
 
-  document.getElementById('rYesBody').textContent = spouseNote;
-  document.getElementById('calcIncome2Wrap').style.display = S.spouseWork === 'ndfl' ? 'block' : 'none';
-  showResult('r-yes');
-}
-
-// ──── Build reason cards ────
-function buildNo(reasons) {
-  document.getElementById('noReasons').innerHTML = reasons.map(r =>
-    `<div class="card blocked"><div class="card-icon">❌</div><div>${r}</div></div>`
-  ).join('');
-}
-function buildMaybe(reasons) {
-  document.getElementById('maybeReasons').innerHTML = reasons.map(r =>
-    `<div class="card"><div class="card-icon">⚠️</div><div>${r}</div></div>`
-  ).join('');
-}
-
-// ──── Format number ────
-function fmt(n) {
-  return n.toLocaleString('ru-RU');
-}
-
-// ──── External links ────
-function openGU() {
-  const url = 'https://www.gosuslugi.ru/600229/1';
-  tg ? tg.openLink(url) : window.open(url, '_blank');
-}
-function openGU2() {
-  const url = 'https://www.gosuslugi.ru/category/family';
-  tg ? tg.openLink(url) : window.open(url, '_blank');
-}
-function openExternal(url) {
-  tg ? tg.openLink(url) : window.open(url, '_blank');
-}
-
-// ──── Restart ────
-function restart() {
-  Object.assign(S, { citizen: null, children: 0, region: null, myWork: null, spouseWork: null, totalIncome: 0, famSize: 3, alimony: null });
-  childCount = 0; famCount = 3;
-  document.getElementById('npVal').value = 0;
-  document.getElementById('npMinus').disabled = true;
-  document.getElementById('childContinueBtn').disabled = true;
-  document.getElementById('famVal').value = 3;
-  document.getElementById('famMinus').disabled = true;
-  document.getElementById('totalIncome').value = '';
-  document.getElementById('incomeCheck').style.display = 'none';
-  document.getElementById('incomeContinueBtn').disabled = true;
-  clearRegion();
-  go(0);
-  document.getElementById('progWrap').style.opacity = '0';
-}
-
-// ──── Init ────
-renderRegions();
-</script>
-</body>
-</html>
+  document.getElementById('rYesBody').textContent = spouseNote
