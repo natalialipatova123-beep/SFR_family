@@ -743,7 +743,7 @@
     <div class="income-group">
       <div class="income-label">Суммарный доход всей семьи за 2025 год, ₽</div>
       <div class="income-input-wrap">
-        <input type="number" id="totalIncome" placeholder="например, 1 200 000" min="0" oninput="updateCalc()"/>
+        <input type="text" inputmode="numeric" id="totalIncome" placeholder="например, 1 200 000" oninput="numFmt(this);updateCalc()"/>
         <span>₽</span>
       </div>
     </div>
@@ -808,11 +808,11 @@
       </div>
       <div class="calc-field">
         <label>Ваш годовой доход за 2025 год (до вычета НДФЛ), ₽</label>
-        <input type="number" id="calcIncome1" placeholder="например, 840 000" oninput="calcPayment()"/>
+        <input type="text" inputmode="numeric" id="calcIncome1" placeholder="например, 840 000" oninput="numFmt(this);calcPayment()"/>
       </div>
       <div class="calc-field" id="calcIncome2Wrap" style="display:none">
         <label>Годовой доход супруга(и) за 2025 год (до вычета НДФЛ), ₽</label>
-        <input type="number" id="calcIncome2" placeholder="например, 600 000" oninput="calcPayment()"/>
+        <input type="text" inputmode="numeric" id="calcIncome2" placeholder="например, 600 000" oninput="numFmt(this);calcPayment()"/>
       </div>
       <div class="calc-result-row">
         <span class="cr-label">Ориентировочная выплата в год:</span>
@@ -914,10 +914,6 @@
     </div>
     <p style="font-size:13px;color:var(--hint);line-height:1.5;">При расчёте среднедушевого дохода учитываются доходы всех членов семьи за 2025 год.</p>
 
-    <div class="info-box">
-      <b>Формула:</b> сумма доходов семьи за год ÷ 12 месяцев ÷ число членов семьи = среднедушевой доход в месяц.<br>Он должен быть <b>не выше 1,5 × ПМ</b> в вашем регионе.
-    </div>
-
     <p style="font-size:12px;font-weight:700;color:var(--hint);margin-top:4px;">УЧИТЫВАЮТСЯ:</p>
     <div class="cards">
       <div class="card">
@@ -961,35 +957,25 @@
       <button class="icon-back-btn" onclick="goBack()">←</button>
       <h2>Допустимое имущество</h2>
     </div>
-    <p style="font-size:13px;color:var(--hint);line-height:1.5;">При назначении выплаты оценивается имущество всех членов семьи. Допускается владение:</p>
+    <p style="font-size:13px;color:var(--hint);line-height:1.5;">При назначении выплаты оценивается имущество всех членов семьи.</p>
 
     <div class="cards">
       <div class="card">
         <div class="card-icon">🏠</div>
-        <div><b>Жильё</b>Одно жилое помещение любой площади. Либо несколько, если общая площадь в расчёте на человека не превышает установленную норму.</div>
-      </div>
-      <div class="card">
-        <div class="card-icon">🌾</div>
-        <div><b>Земельный участок</b>Один участок площадью до 0,25 га в городских поселениях или до 1 га в сельских.</div>
-      </div>
-      <div class="card">
-        <div class="card-icon">🏗️</div>
-        <div><b>Нежилое помещение</b>Одно нежилое помещение (гараж, хозяйственная постройка, помещение для ведения деятельности).</div>
+        <div><b>Жильё</b>Квартира или дом (если жильё одно).<br><span style="font-size:12px;color:var(--hint);">Если несколько квартир — не более 24 м² на человека. Второй дом — не более 40 м² на человека.</span></div>
       </div>
       <div class="card">
         <div class="card-icon">🚗</div>
-        <div><b>Транспортное средство</b>Одно транспортное средство. Два допускается, если одно из них: старше 5 лет, предназначено для перевозки инвалида, либо семья является многодетной.</div>
+        <div><b>Транспорт</b>1 авто/мото. 2 — для многодетных или инвалидов.</div>
       </div>
       <div class="card">
-        <div class="card-icon">🚜</div>
-        <div><b>Спецтехника и маломерный флот</b>Одна единица сельскохозяйственной техники или одно маломерное судно.</div>
+        <div class="card-icon">🌾</div>
+        <div><b>Земельные участки</b>До 0,25 га в городе. До 1 га в селе.</div>
       </div>
     </div>
 
-    <div class="info-box">💡 Имущество, полученное в наследство при наличии нескольких наследников (в долях), а также жильё, признанное непригодным для проживания, как правило, не является препятствием. Точные условия уточняйте в СФР.</div>
-
     <button class="btn-secondary" onclick="openExternal('https://sfr.gov.ru/grazhdanam/semyam_s_detmi/ezhegodnaya_semejnaya_vyplata/')">Подробнее на сайте СФР →</button>
-    <p class="foot-note">Источник: ФЗ № 569-ФЗ «Об ежегодной денежной выплате семьям, имеющим детей»</p>
+    <p class="foot-note">Источник: sfr.gov.ru — официальный сайт СФР</p>
   </div>
 
 </div><!-- /main -->
@@ -1275,7 +1261,7 @@ function updateIncomeScreen() {
 }
 
 function updateCalc() {
-  var val = parseFloat(document.getElementById('totalIncome').value) || 0;
+  var val = numVal('totalIncome');
   S.totalIncome = val;
   var pm = S.region ? REGIONS[S.region] : 17412;
   var limit = pm * 1.5;
@@ -1332,9 +1318,8 @@ function selectRate(r) {
 // При 13%: 13% − 6% = 7% от дохода
 // При 15%: 15% − 6% = 9% от дохода
 function calcPayment() {
-  var i1 = parseFloat(document.getElementById('calcIncome1').value) || 0;
-  var calcIncome2El = document.getElementById('calcIncome2');
-  var i2 = parseFloat(calcIncome2El ? calcIncome2El.value : 0) || 0;
+  var i1 = numVal('calcIncome1');
+  var i2 = numVal('calcIncome2');
   var rate = selectedRate;
   var preferential = 6; // льготная ставка всегда 6% (источник: sfr.gov.ru)
   var diff = rate - preferential; // 7% при 13%, 9% при 15%
@@ -1399,9 +1384,45 @@ function buildMaybe(reasons) {
   }).join('');
 }
 
-// ──── Format number ────
+// ──── Format number (display) ────
 function fmt(n) {
   return n.toLocaleString('ru-RU');
+}
+
+// ──── Number input formatting ────
+function numFmt(input) {
+  var start = input.selectionStart;
+  var old = input.value;
+  // count digits before cursor to restore position
+  var digitsBefore = old.slice(0, start).replace(/\D/g, '').length;
+  var digits = old.replace(/\D/g, '');
+  // insert space every 3 digits from right
+  var formatted = '';
+  for (var i = 0; i < digits.length; i++) {
+    if (i > 0 && (digits.length - i) % 3 === 0) { formatted += ' '; }
+    formatted += digits[i];
+  }
+  input.value = formatted;
+  // restore cursor position
+  var count = 0, newPos = formatted.length;
+  if (digitsBefore === 0) {
+    newPos = 0;
+  } else {
+    for (var j = 0; j < formatted.length; j++) {
+      if (/\d/.test(formatted[j])) {
+        count++;
+        if (count === digitsBefore) { newPos = j + 1; break; }
+      }
+    }
+  }
+  try { input.setSelectionRange(newPos, newPos); } catch(e) {}
+}
+
+// read formatted input as float
+function numVal(id) {
+  var el = document.getElementById(id);
+  if (!el) { return 0; }
+  return parseFloat((el.value || '').replace(/[\s ]/g, '')) || 0;
 }
 
 // ──── External links ────
@@ -1439,4 +1460,4 @@ renderRegions();
 </script>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
