@@ -80,7 +80,6 @@
       display: flex; flex-direction: column; align-items: center;
       gap: 10px; text-align: center; color: #fff;
     }
-    .hero img { width: 140px; filter: brightness(0) invert(1); opacity: .92; }
     .hero-divider { width: 40px; height: 2px; background: rgba(255,255,255,.35); border-radius: 2px; }
     .hero h2 { font-size: 18px; font-weight: 700; line-height: 1.35; }
     .hero p  { font-size: 13px; opacity: .85; line-height: 1.5; }
@@ -93,7 +92,7 @@
       padding: 10px 12px;
       font-size: 13px; line-height: 1.45;
     }
-    .feat-icon { font-size: 18px; flex-shrink: 0; margin-top: 0px; }
+    .feat-icon { font-size: 18px; flex-shrink: 0; }
 
     /* ──── STEP HEADER ──── */
     .step-icon {
@@ -259,6 +258,15 @@
       cursor: pointer; transition: all .2s;
     }
     .btn-secondary:hover { background: var(--blue-light); }
+    .btn-ghost {
+      width: 100%; padding: 11px;
+      background: transparent; color: var(--hint);
+      font-size: 13px; font-weight: 500;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-ghost:hover { background: var(--secondary-bg); }
 
     /* ──── RESULT ──── */
     .result-hero {
@@ -285,7 +293,8 @@
       padding: 18px 16px;
     }
     .calc-box * { color: #ffffff !important; }
-    .calc-box h3 { font-size: 14px; opacity: .9; margin-bottom: 14px; font-weight: 500; }
+    .calc-box h3 { font-size: 14px; opacity: .9; margin-bottom: 6px; font-weight: 600; }
+    .calc-box .calc-subtitle { font-size: 11px; opacity: .75; margin-bottom: 14px; line-height: 1.4; }
     .calc-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
     .calc-field label { font-size: 12px; color: rgba(255,255,255,0.85) !important; }
     .calc-field input {
@@ -325,14 +334,32 @@
     .card b { display: block; font-size: 13px; margin-bottom: 2px; }
     .card.blocked { background: var(--red-light); }
 
-    /* ──── FOOTER NOTE ──── */
-    .foot-note {
-      font-size: 11px; color: var(--hint);
-      text-align: center; line-height: 1.5;
+    /* ──── FAQ ──── */
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
     }
-
-    /* ──── DIVIDER ──── */
-    .divider { height: 1px; background: var(--border); }
+    .faq-q {
+      padding: 13px 14px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      background: var(--bg);
+      transition: background .15s;
+      line-height: 1.4;
+    }
+    .faq-q:hover { background: var(--secondary-bg); }
+    .faq-arrow { font-size: 12px; color: var(--hint); flex-shrink: 0; transition: transform .2s; }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-a {
+      display: none;
+      padding: 0 14px 13px;
+      font-size: 13px; line-height: 1.6;
+      color: #374151;
+      background: var(--bg);
+    }
+    .faq-item.open .faq-a { display: block; }
 
     /* ──── SFR IMAGES ──── */
     .sfr-banner {
@@ -360,7 +387,6 @@
       box-shadow: 0 2px 10px rgba(0,0,0,.18);
       flex-shrink: 0;
     }
-    .sfr-family-icon img { width: 52px; height: 52px; }
     .sfr-links-row {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 8px;
@@ -382,6 +408,15 @@
     }
     .sfr-link-card:hover { opacity: .9; }
 
+    /* ──── FOOTER NOTE ──── */
+    .foot-note {
+      font-size: 11px; color: var(--hint);
+      text-align: center; line-height: 1.5;
+    }
+
+    /* ──── DIVIDER ──── */
+    .divider { height: 1px; background: var(--border); }
+
     /* ──── DARK MODE ──── */
     @media (prefers-color-scheme: dark) {
       :root {
@@ -395,6 +430,8 @@
         --red-light: #2b0d0d;
         --orange-light: #2b1d00;
       }
+      .faq-q { background: var(--secondary-bg); }
+      .faq-a { background: var(--secondary-bg); }
     }
   </style>
 </head>
@@ -422,7 +459,6 @@
   <!-- ──── S0: Welcome ──── -->
   <div class="screen active" id="s0">
 
-    <!-- Главный баннер с картинкой СФР -->
     <div class="sfr-banner">
       <img src="https://sfr.gov.ru/data/mainpage/b3e4e52b-7e97-4a52-963c-fb5cfc103611-small.jpg"
            alt="Семьям с детьми"
@@ -481,8 +517,8 @@
           </svg>
         </div>
         <div style="text-align:left;line-height:1.2;">
-          <div style="font-size:13px;font-weight:700;color:#fff;letter-spacing:.01em;">Социальный фонд</div>
-          <div style="font-size:13px;font-weight:700;color:#fff;letter-spacing:.01em;">России</div>
+          <div style="font-size:13px;font-weight:700;color:#fff;">Социальный фонд</div>
+          <div style="font-size:13px;font-weight:700;color:#fff;">России</div>
         </div>
       </div>
       <div class="hero-divider"></div>
@@ -493,21 +529,25 @@
     <div class="features">
       <div class="feat">
         <div class="feat-icon">💰</div>
-        <div>Государство возвращает <b>7% от уплаченного НДФЛ</b> работающим родителям с двумя и более детьми</div>
+        <div>Выплата = разница между фактически уплаченным НДФЛ и суммой по льготной ставке <b>6%</b>. При ставке 13% — это <b>7% от дохода</b>, при 15% — <b>9% от дохода</b></div>
       </div>
       <div class="feat">
         <div class="feat-icon">📅</div>
-        <div>Заявления принимаются с <b>1 июня по 1 октября 2026 года</b> за доходы 2025 года</div>
+        <div>Заявление подаётся с <b>1 июня по 1 октября 2026 года</b> за доходы 2025 года. Через Госуслуги или МФЦ</div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">👨‍👩‍👧‍👦</div>
+        <div>Нужны <b>двое и более детей</b> до 18 лет (или до 23 лет при очном обучении), гражданство РФ и уплата НДФЛ</div>
       </div>
       <div class="feat">
         <div class="feat-icon">📍</div>
-        <div>Порог дохода и потенциальная выплата рассчитываются по вашему <b>региону проживания</b></div>
+        <div>Среднедушевой доход семьи должен быть <b>не выше 1,5 прожиточного минимума</b> в вашем регионе</div>
       </div>
     </div>
 
     <button class="btn-primary" onclick="go(1)">Начать проверку →</button>
+    <button class="btn-ghost" onclick="goFaq()">Частые вопросы ❓</button>
 
-    <!-- Другие меры поддержки — картинки с sfr.gov.ru -->
     <div>
       <p style="font-size:12px;color:var(--hint);margin-bottom:8px;font-weight:600;">ДРУГИЕ МЕРЫ ПОДДЕРЖКИ СЕМЕЙ</p>
       <div class="sfr-links-row">
@@ -530,12 +570,12 @@
   <!-- ──── S1: Citizenship ──── -->
   <div class="screen" id="s1">
     <div class="step-icon">🇷🇺</div>
-    <div class="step-q">Вы — гражданин Российской Федерации?</div>
-    <div class="step-hint">Выплата предоставляется только гражданам РФ, проживающим на территории России.</div>
+    <div class="step-q">Вы и ваши дети — граждане Российской Федерации?</div>
+    <div class="step-hint">Заявитель и дети должны быть гражданами РФ и постоянно проживать на территории России. Если второй родитель — иностранец, это не является препятствием.</div>
     <div class="opts">
       <div class="opt" onclick="ans('citizen', true)">
         <div class="opt-icon">✅</div>
-        <div class="opt-body"><div class="opt-label">Да, гражданин РФ</div></div>
+        <div class="opt-body"><div class="opt-label">Да, я и дети — граждане РФ, живём в России</div></div>
       </div>
       <div class="opt" onclick="ans('citizen', false)">
         <div class="opt-icon">🚫</div>
@@ -547,8 +587,8 @@
   <!-- ──── S2: Children count ──── -->
   <div class="screen" id="s2">
     <div class="step-icon">👶</div>
-    <div class="step-q">Сколько у вас детей до 18 лет?</div>
-    <div class="step-hint">Также учитываются дети 18–23 лет, обучающиеся по очной форме и не состоящие в браке.</div>
+    <div class="step-q">Сколько у вас детей?</div>
+    <div class="step-hint">Учитываются дети до 18 лет, а также дети от 18 до 23 лет, обучающиеся по очной форме и не состоящие в браке. Место проживания детей значения не имеет.</div>
     <div class="npicker">
       <button class="np-btn" id="npMinus" onclick="chC(-1)" disabled>−</button>
       <input class="np-val" id="npVal" value="0" readonly/>
@@ -564,7 +604,7 @@
   <div class="screen" id="s3">
     <div class="step-icon">📍</div>
     <div class="step-q">Выберите регион проживания</div>
-    <div class="step-hint">Порог дохода для получения выплаты рассчитывается по прожиточному минимуму трудоспособного населения вашего региона.</div>
+    <div class="step-hint">Порог среднедушевого дохода семьи рассчитывается как 1,5 × прожиточный минимум на душу населения в вашем регионе.</div>
     <div class="region-wrap" id="regionWrap">
       <div class="search-box">
         <span>🔍</span>
@@ -586,7 +626,7 @@
   <div class="screen" id="s4">
     <div class="step-icon">💼</div>
     <div class="step-q">Ваш вид занятости в 2025 году</div>
-    <div class="step-hint">Для получения выплаты необходимо, чтобы с вашего дохода удерживался <b>НДФЛ</b>.</div>
+    <div class="step-hint">Выплата предоставляется тем, с чьего дохода был уплачен НДФЛ за 2025 год. Работать полный год необязательно — достаточно самого факта уплаты НДФЛ.</div>
     <div class="opts">
       <div class="opt" onclick="ans('myWork', 'ndfl')">
         <div class="opt-icon">👔</div>
@@ -598,22 +638,29 @@
       <div class="opt" onclick="ans('myWork', 'ndfl')">
         <div class="opt-icon">📋</div>
         <div class="opt-body">
-          <div class="opt-label">ГПХ / авторские договоры / аренда</div>
+          <div class="opt-label">ГПХ, авторские договоры, аренда имущества</div>
           <div class="opt-sub">Доход облагается НДФЛ</div>
+        </div>
+      </div>
+      <div class="opt" onclick="ans('myWork', 'ndfl')">
+        <div class="opt-icon">🎖️</div>
+        <div class="opt-body">
+          <div class="opt-label">Военнослужащий / силовые ведомства</div>
+          <div class="opt-sub">Денежное довольствие облагается НДФЛ</div>
         </div>
       </div>
       <div class="opt" onclick="ans('myWork', 'no_ndfl')">
         <div class="opt-icon">🧾</div>
         <div class="opt-body">
-          <div class="opt-label">Самозанятый (НПД) или ИП на УСН/патенте</div>
-          <div class="opt-sub">НДФЛ не уплачивается — выплата не положена</div>
+          <div class="opt-label">Самозанятый (НПД) или ИП на УСН / патенте</div>
+          <div class="opt-sub">НДФЛ с этих доходов не уплачивается — выплата не положена</div>
         </div>
       </div>
       <div class="opt" onclick="ans('myWork', 'no_ndfl')">
         <div class="opt-icon">🚫</div>
         <div class="opt-body">
-          <div class="opt-label">Безработный или неофициальная занятость</div>
-          <div class="opt-sub">Нет налогооблагаемого дохода</div>
+          <div class="opt-label">Безработный, неофициальная занятость, декрет</div>
+          <div class="opt-sub">Нет налогооблагаемого дохода — выплата не положена</div>
         </div>
       </div>
     </div>
@@ -623,27 +670,27 @@
   <div class="screen" id="s5">
     <div class="step-icon">👫</div>
     <div class="step-q">Ситуация с супругом(ой)</div>
-    <div class="step-hint">Выплата рассчитывается отдельно для каждого из работающих родителей. Оба могут получить её одновременно.</div>
+    <div class="step-hint">Выплата рассчитывается отдельно для каждого работающего родителя. При этом находиться в браке не обязательно — статус отношений не влияет на право получения.</div>
     <div class="opts">
       <div class="opt" onclick="ans('spouseWork', 'ndfl')">
         <div class="opt-icon">✅</div>
         <div class="opt-body">
           <div class="opt-label">Работает официально с уплатой НДФЛ</div>
-          <div class="opt-sub">Супруг тоже сможет подать заявление отдельно</div>
+          <div class="opt-sub">Супруг(а) также сможет подать заявление отдельно</div>
         </div>
       </div>
       <div class="opt" onclick="ans('spouseWork', 'no_ndfl')">
         <div class="opt-icon">➖</div>
         <div class="opt-body">
-          <div class="opt-label">Самозанятый, ИП на УСН, безработный</div>
-          <div class="opt-sub">Супруг не сможет получить выплату</div>
+          <div class="opt-label">Самозанятый, ИП на УСН, безработный, декрет</div>
+          <div class="opt-sub">Супруг(а) не сможет получить выплату</div>
         </div>
       </div>
       <div class="opt" onclick="ans('spouseWork', 'single')">
         <div class="opt-icon">🧑‍🍼</div>
         <div class="opt-body">
           <div class="opt-label">Я воспитываю детей один(а)</div>
-          <div class="opt-sub">Единственный родитель, вдовец/вдова</div>
+          <div class="opt-sub">Единственный родитель, вдовец/вдова, второй родитель — иностранец</div>
         </div>
       </div>
     </div>
@@ -653,12 +700,12 @@
   <div class="screen" id="s6">
     <div class="step-icon">💰</div>
     <div class="step-q">Доходы семьи за 2025 год</div>
-    <div class="step-hint">Введите суммарный годовой доход всей семьи и количество членов семьи — для расчёта среднедушевого дохода.</div>
+    <div class="step-hint">Учитываются доходы всех членов семьи <b>до вычета налогов</b>: зарплата, пенсии, пособия, алименты, проценты по вкладам, аренда и другие. Введите суммарный годовой доход и количество членов семьи.</div>
 
     <div id="thresholdInfo" class="threshold-box"></div>
 
     <div class="income-group">
-      <div class="income-label">Суммарный доход семьи за год, ₽</div>
+      <div class="income-label">Суммарный доход всей семьи за 2025 год, ₽</div>
       <div class="income-input-wrap">
         <input type="number" id="totalIncome" placeholder="например, 1 200 000" min="0" oninput="updateCalc()"/>
         <span>₽</span>
@@ -682,16 +729,16 @@
   <!-- ──── S7: Alimony ──── -->
   <div class="screen" id="s7">
     <div class="step-icon">⚖️</div>
-    <div class="step-q">Есть ли у вас задолженность по алиментам?</div>
-    <div class="step-hint">Наличие подтверждённого долга по алиментам является основанием для отказа в выплате.</div>
+    <div class="step-q">Есть ли у вас подтверждённая задолженность по алиментам?</div>
+    <div class="step-hint">Наличие подтверждённой задолженности по алиментам является основанием для отказа в выплате. Если долг будет погашен, право на выплату может восстановиться.</div>
     <div class="opts">
       <div class="opt" onclick="ans('alimony', false)">
         <div class="opt-icon">✅</div>
-        <div class="opt-body"><div class="opt-label">Нет задолженности</div></div>
+        <div class="opt-body"><div class="opt-label">Нет задолженности по алиментам</div></div>
       </div>
       <div class="opt" onclick="ans('alimony', true)">
         <div class="opt-icon">❌</div>
-        <div class="opt-body"><div class="opt-label">Есть задолженность по алиментам</div></div>
+        <div class="opt-body"><div class="opt-label">Есть подтверждённая задолженность</div></div>
       </div>
     </div>
   </div>
@@ -707,8 +754,9 @@
     <!-- Calculator -->
     <div class="calc-box">
       <h3>Рассчитайте вашу выплату</h3>
+      <div class="calc-subtitle">Выплата = НДФЛ фактический − НДФЛ по льготной ставке 6%</div>
       <div class="calc-field">
-        <label>Ваша ставка НДФЛ</label>
+        <label>Ваша ставка НДФЛ в 2025 году</label>
         <div style="display:flex;gap:8px;margin-top:6px;">
           <button type="button" id="rateBtn13" onclick="selectRate(13)"
             style="flex:1;padding:11px 8px;font-size:15px;font-weight:700;border:2px solid #fff !important;border-radius:10px;cursor:pointer;background:#fff !important;color:#0055a4 !important;-webkit-text-fill-color:#0055a4 !important;transition:all .15s;">
@@ -719,14 +767,14 @@
             15%
           </button>
         </div>
-        <div id="rateHint" style="display:none;"></div>
+        <div id="rateHint" style="font-size:11px;opacity:.75;margin-top:6px;line-height:1.4;"></div>
       </div>
       <div class="calc-field">
-        <label>Ваш годовой доход (с которого удержан НДФЛ), ₽</label>
+        <label>Ваш годовой доход за 2025 год (до вычета НДФЛ), ₽</label>
         <input type="number" id="calcIncome1" placeholder="например, 840 000" oninput="calcPayment()"/>
       </div>
       <div class="calc-field" id="calcIncome2Wrap" style="display:none">
-        <label>Годовой доход супруга (с НДФЛ), ₽</label>
+        <label>Годовой доход супруга(и) за 2025 год (до вычета НДФЛ), ₽</label>
         <input type="number" id="calcIncome2" placeholder="например, 600 000" oninput="calcPayment()"/>
       </div>
       <div class="calc-result-row">
@@ -736,7 +784,6 @@
       <div class="calc-note" id="calcNote">Введите доход выше для расчёта. Фактическую сумму определяет СФР по данным ФНС.</div>
     </div>
 
-    <!-- Баннер СФР с сайта sfr.gov.ru -->
     <div class="sfr-banner" style="aspect-ratio:16/6;">
       <img src="https://sfr.gov.ru/data/mainpage/c8760105-b7ae-4eeb-8bd6-1d816bc687b2-small.png"
            alt="СФР" onerror="this.parentElement.style.background='linear-gradient(135deg,#16a34a,#15803d)';this.style.display='none'"/>
@@ -746,7 +793,7 @@
     <div class="cards">
       <div class="card">
         <div class="card-icon">📎</div>
-        <div><b>Что потребуется</b>Паспорт, СНИЛС, свидетельства о рождении детей. Справки о доходах СФР запросит у ФНС самостоятельно.</div>
+        <div><b>Что потребуется</b>Паспорт, СНИЛС, свидетельства о рождении детей. Сведения о доходах и уплаченном НДФЛ СФР запрашивает у ФНС самостоятельно.</div>
       </div>
       <div class="card">
         <div class="card-icon">🖥️</div>
@@ -754,17 +801,22 @@
       </div>
       <div class="card">
         <div class="card-icon">📅</div>
-        <div><b>Срок подачи</b>С 1 июня по 1 октября 2026 года (за доходы 2025 года). После 1 октября заявления не принимаются.</div>
+        <div><b>Срок подачи</b>С 1 июня по 1 октября 2026 года (за доходы 2025 года). Заявления, поданные после 1 октября, не рассматриваются.</div>
       </div>
       <div class="card">
         <div class="card-icon">⏱️</div>
-        <div><b>Срок рассмотрения</b>Устанавливается регламентом СФР (Постановление Правительства РФ № 2173). Точные сроки выплаты уточняйте на сайте СФР.</div>
+        <div><b>Срок рассмотрения и выплаты</b>До 10 рабочих дней с момента подачи заявления. Выплата перечисляется до конца октября 2026 года.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📞</div>
+        <div><b>Вопросы по расчёту и выплате</b>Единый контакт-центр СФР: <b>8-800-100-00-01</b> (звонок бесплатный). По налогам — ФНС России.</div>
       </div>
     </div>
 
     <button class="btn-primary" onclick="openGU()">Подать заявление на Госуслугах →</button>
+    <button class="btn-ghost" onclick="goFaq()">Частые вопросы ❓</button>
     <button class="btn-secondary" onclick="restart()">Пройти ещё раз</button>
-    <p class="foot-note">⚠️ Результат носит информационный характер. Окончательное решение принимает СФР.</p>
+    <p class="foot-note">⚠️ Результат носит информационный характер. Окончательное решение принимает СФР на основе данных ФНС и других ведомств.</p>
   </div>
 
   <!-- ──── RESULT: NO ──── -->
@@ -777,7 +829,6 @@
 
     <div class="cards" id="noReasons"></div>
 
-    <!-- Другие выплаты с картинками sfr.gov.ru -->
     <p style="font-size:12px;color:var(--hint);font-weight:600;">ДРУГИЕ ВЫПЛАТЫ СФР ДЛЯ СЕМЕЙ</p>
     <div class="sfr-links-row">
       <div class="sfr-link-card" onclick="openExternal('https://sfr.gov.ru/grazhdanam/semyam_s_detmi/edinoe_posobie/')">
@@ -793,8 +844,9 @@
     </div>
 
     <button class="btn-primary" onclick="openGU2()">Все выплаты семьям на Госуслугах →</button>
+    <button class="btn-ghost" onclick="goFaq()">Частые вопросы ❓</button>
     <button class="btn-secondary" onclick="restart()">Пройти ещё раз</button>
-    <p class="foot-note">⚠️ Обратитесь в СФР для точной консультации: <b>8-800-10-000-01</b></p>
+    <p class="foot-note">⚠️ Обратитесь в СФР для точной консультации: <b>8-800-100-00-01</b></p>
   </div>
 
   <!-- ──── RESULT: MAYBE ──── -->
@@ -809,7 +861,7 @@
 
     <div class="card">
       <div class="card-icon">📞</div>
-      <div><b>Рекомендуем обратиться в СФР</b>Горячая линия: <b>8-800-10-000-01</b> (бесплатно). Или лично в клиентскую службу по месту жительства.</div>
+      <div><b>Рекомендуем обратиться в СФР</b>Единый контакт-центр: <b>8-800-100-00-01</b> (бесплатно). Или лично в клиентскую службу по месту жительства.</div>
     </div>
 
     <button class="btn-primary" onclick="openGU()">Подать заявление на Госуслугах →</button>
@@ -817,121 +869,275 @@
     <p class="foot-note">⚠️ Окончательное решение принимает СФР на основе данных ФНС и других ведомств.</p>
   </div>
 
+  <!-- ──── FAQ ──── -->
+  <div class="screen" id="s-faq">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button onclick="backFromFaq()" style="background:var(--secondary-bg);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">←</button>
+      <div style="font-size:18px;font-weight:700;">Частые вопросы</div>
+    </div>
+    <p style="font-size:13px;color:var(--hint);line-height:1.5;">Официальные ответы СФР на типичные вопросы об ежегодной семейной выплате.</p>
+
+    <div class="cards" style="gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+
+      <div class="faq-item open">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Нужно ли родителям быть в браке?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Нет, не нужно. Статус отношений — в браке, в разводе, не расписаны — не влияет на право получения выплаты.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          С кем должны жить дети, если родители в разводе?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Место проживания детей значения не имеет. Главное — чтобы у заявителя было двое и более детей, с чьих доходов уплачивался НДФЛ, не было долгов по алиментам, а среднедушевой доход семьи не превышал 1,5 ПМ в регионе.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Второй родитель — иностранец. Выплата положена?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Да. Если заявитель и дети — граждане РФ и проживают в России, выплата может быть оформлена при соблюдении остальных условий.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          С каких доходов начисляется выплата?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Выплата рассчитывается с доходов, с которых уплачен НДФЛ: зарплата и доход от предпринимательства, оплата по договорам ГПХ и авторские гонорары, денежное довольствие военнослужащих и сотрудников силовых ведомств, доходы от аренды имущества и другие.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Могут ли получить выплату самозанятые?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Нет. Самозанятые (НПД) и ИП на спецрежимах (УСН, патент) не могут получить выплату, если у них нет других доходов, облагаемых НДФЛ. Выплата рассчитывается именно как разница между НДФЛ уплаченным и суммой по льготной ставке 6%.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Если работал не весь год — выплата положена?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Да. Закон не требует отработать полный год. Главное — чтобы с полученных доходов был уплачен НДФЛ за 2025 год.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          В прошлом году был в декрете и не работал — что делать?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          В этом случае выплату оформить не получится: одно из ключевых условий — уплата НДФЛ за 2025 год. Если в 2026 году вы вернётесь на работу, при следующем приёме заявлений (за 2026 год) можно будет обратиться снова.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Менял работу в 2025 году — сколько заявлений подавать?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Одно заявление. Для расчёта выплаты учитывается общая сумма НДФЛ со всех доходов за 2025 год по данным ФНС.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Может ли получить выплату работающий пенсионер?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Да, если у него есть двое и более детей, соответствующих условиям, он уплатил НДФЛ со своих доходов и выполняет остальные требования.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Двое детей от разных отцов — может ли нынешний муж оформить выплату?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Нет. Право на выплату имеет только тот родитель, у которого на воспитании двое и более детей. Если у супруга только один общий с вами ребёнок — он не может оформить выплату.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Как рассчитывается размер выплаты?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Выплата = разница между суммой расчётного НДФЛ с дохода за 2025 год и суммой, исчисленной с того же дохода по льготной ставке 6%.<br><br>
+          При ставке 13%: выплата = 13% − 6% = <b>7% от годового дохода</b>.<br>
+          При ставке 15%: выплата = 15% − 6% = <b>9% от годового дохода</b>.<br><br>
+          Фактическую сумму рассчитывает СФР по данным ФНС.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Как считается среднедушевой доход семьи?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          Суммарный доход всех членов семьи за 2025 год (до вычета налогов) ÷ 12 месяцев ÷ количество членов семьи.<br><br>
+          Результат должен быть не выше 1,5 × прожиточный минимум на душу населения в регионе проживания за 2025 год.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-top:1px solid var(--border);">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Куда обращаться с вопросами?
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">
+          • По расчёту и выплате — в <b>СФР</b>, единый контакт-центр: <b>8-800-100-00-01</b><br>
+          • По налогам и НДФЛ — в <b>ФНС России</b> (nalog.gov.ru)<br>
+          • По начисленной зарплате — в бухгалтерию по месту работы<br>
+          • Данные о доходах доступны в личном кабинете на <b>Госуслугах</b> в разделе «Справка о доходах»
+        </div>
+      </div>
+
+    </div>
+
+    <button class="btn-primary" onclick="openGU()">Подать заявление на Госуслугах →</button>
+    <button class="btn-secondary" onclick="backFromFaq()">← Назад</button>
+    <p class="foot-note">Источник: <a href="https://sfr.gov.ru/grazhdanam/semyam_s_detmi/ezhegodnaya_semejnaya_vyplata/chastye_voprosy" style="color:var(--hint)">sfr.gov.ru</a> — официальный сайт СФР</p>
+  </div>
+
 </div><!-- /main -->
 
 <script>
 // ──── Telegram ────
-const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
 if (tg) {
   tg.ready();
   tg.expand();
-  const tp = tg.themeParams || {};
-  const set = (v, c) => document.documentElement.style.setProperty(v, c);
-  if (tp.bg_color)           set('--bg', tp.bg_color);
-  if (tp.text_color)         set('--text', tp.text_color);
-  if (tp.hint_color)         set('--hint', tp.hint_color);
-  if (tp.secondary_bg_color) set('--secondary-bg', tp.secondary_bg_color);
-  // --blue и --btn намеренно не перезаписываем: оставляем фирменный синий СФР #0055a4
+  var tp = tg.themeParams || {};
+  var setVar = function(v, c) { document.documentElement.style.setProperty(v, c); };
+  if (tp.bg_color)           setVar('--bg', tp.bg_color);
+  if (tp.text_color)         setVar('--text', tp.text_color);
+  if (tp.hint_color)         setVar('--hint', tp.hint_color);
+  if (tp.secondary_bg_color) setVar('--secondary-bg', tp.secondary_bg_color);
+  // --blue и --btn намеренно не перезаписываем — сохраняем фирменный синий СФР
 }
 
-// ──── REGIONS (ПМ трудоспособного населения 2026, руб/мес) ────
-const REGIONS = {
-  'Алтайский край': 18373,
-  'Амурская область': 23740,
-  'Архангельская область': 23946,
-  'Астраханская область': 19068,
-  'Белгородская область': 17547,
-  'Брянская область': 17960,
-  'Владимирская область': 18373,
-  'Волгоградская область': 18373,
-  'Вологодская область': 20230,
-  'Воронежская область': 17547,
-  'Донецкая Народная Республика': 20644,
-  'Еврейская автономная область': 25805,
-  'Забайкальский край': 22502,
-  'Запорожская область': 20644,
-  'Ивановская область': 18166,
-  'Иркутская область': 22502,
-  'Кабардино-Балкарская Республика': 22089,
-  'Калининградская область': 19611,
-  'Калужская область': 18579,
-  'Камчатский край': 38000,
-  'Карачаево-Черкесская Республика': 19405,
-  'Кемеровская область — Кузбасс': 20644,
-  'Кировская область': 18166,
-  'Костромская область': 18166,
-  'Краснодарский край': 19817,
-  'Красноярский край': 22914,
-  'Курганская область': 18166,
-  'Курская область': 17547,
-  'Ленинградская область': 22502,
-  'Липецкая область': 17547,
-  'Луганская Народная Республика': 20644,
-  'Магаданская область': 42000,
-  'Московская область': 24565,
-  'Мурманская область': 29000,
-  'Ненецкий автономный округ': 35000,
-  'Нижегородская область': 18373,
-  'Новгородская область': 19611,
-  'Новосибирская область': 20230,
-  'Омская область': 18579,
-  'Оренбургская область': 18373,
-  'Орловская область': 17960,
-  'Пензенская область': 17547,
-  'Пермский край': 19817,
-  'Приморский край': 24565,
-  'Псковская область': 19611,
-  'Республика Адыгея': 17754,
-  'Республика Алтай': 19611,
-  'Республика Башкортостан': 18373,
-  'Республика Бурятия': 22502,
-  'Республика Дагестан': 18785,
-  'Республика Ингушетия': 19405,
-  'Республика Калмыкия': 20230,
-  'Республика Карелия': 22685,
-  'Республика Коми': 23740,
-  'Республика Крым': 20230,
-  'Республика Марий Эл': 18166,
-  'Республика Мордовия': 17547,
-  'Республика Саха (Якутия)': 36471,
-  'Республика Северная Осетия — Алания': 18579,
-  'Республика Татарстан': 17547,
-  'Республика Тыва': 20850,
-  'Республика Хакасия': 21057,
-  'Ростовская область': 18785,
-  'Рязанская область': 18373,
-  'Самарская область': 19611,
-  'Саратовская область': 17960,
-  'Сахалинская область': 30000,
-  'Свердловская область': 20644,
-  'Смоленская область': 18373,
-  'Ставропольский край': 18579,
-  'Тамбовская область': 17547,
-  'Тверская область': 19611,
-  'Томская область': 21057,
-  'Тульская область': 18373,
-  'Тюменская область': 21057,
-  'Удмуртская Республика': 18373,
-  'Ульяновская область': 18373,
-  'Хабаровский край': 25186,
-  'Ханты-Мансийский АО — Югра': 28000,
-  'Херсонская область': 20644,
-  'Челябинская область': 20230,
-  'Чеченская Республика': 19817,
-  'Чувашская Республика': 17960,
-  'Чукотский автономный округ': 49431,
-  'Ямало-Ненецкий АО': 35000,
-  'Ярославская область': 19817,
-  'г. Байконур': 20644,
-  'г. Москва': 28940,
-  'г. Санкт-Петербург': 24565,
-  'г. Севастополь': 20644,
+// ──── REGIONS (ПМ на душу населения 2025, руб/мес) ────
+var REGIONS = {
+  'Алтайский край': 15544,
+  'Амурская область': 20004,
+  'Архангельская область': 19882,
+  'Астраханская область': 16021,
+  'Белгородская область': 14875,
+  'Брянская область': 15216,
+  'Владимирская область': 15544,
+  'Волгоградская область': 15544,
+  'Вологодская область': 17044,
+  'Воронежская область': 14875,
+  'Донецкая Народная Республика': 17412,
+  'Еврейская автономная область': 21834,
+  'Забайкальский край': 19013,
+  'Запорожская область': 17412,
+  'Ивановская область': 16669,
+  'Иркутская область': 19013,
+  'Кабардино-Балкарская Республика': 18656,
+  'Калининградская область': 16580,
+  'Калужская область': 15712,
+  'Камчатский край': 31966,
+  'Карачаево-Черкесская Республика': 16406,
+  'Кемеровская область — Кузбасс': 17412,
+  'Кировская область': 15360,
+  'Костромская область': 15360,
+  'Краснодарский край': 16755,
+  'Красноярский край': 19361,
+  'Курганская область': 15360,
+  'Курская область': 14875,
+  'Ленинградская область': 19013,
+  'Липецкая область': 14875,
+  'Луганская Народная Республика': 17412,
+  'Магаданская область': 35385,
+  'Московская область': 20765,
+  'Мурманская область': 24423,
+  'Ненецкий автономный округ': 29500,
+  'Нижегородская область': 15544,
+  'Новгородская область': 16580,
+  'Новосибирская область': 17044,
+  'Омская область': 15712,
+  'Оренбургская область': 15544,
+  'Орловская область': 15216,
+  'Пензенская область': 14875,
+  'Пермский край': 16755,
+  'Приморский край': 20765,
+  'Псковская область': 16580,
+  'Республика Адыгея': 15018,
+  'Республика Алтай': 16580,
+  'Республика Башкортостан': 15544,
+  'Республика Бурятия': 19013,
+  'Республика Дагестан': 15879,
+  'Республика Ингушетия': 16406,
+  'Республика Калмыкия': 17044,
+  'Республика Карелия': 19182,
+  'Республика Коми': 20004,
+  'Республика Крым': 17044,
+  'Республика Марий Эл': 15360,
+  'Республика Мордовия': 14875,
+  'Республика Саха (Якутия)': 30819,
+  'Республика Северная Осетия — Алания': 15712,
+  'Республика Татарстан': 14875,
+  'Республика Тыва': 17611,
+  'Республика Хакасия': 17795,
+  'Ростовская область': 15879,
+  'Рязанская область': 15544,
+  'Самарская область': 16580,
+  'Саратовская область': 15216,
+  'Сахалинская область': 25377,
+  'Свердловская область': 17412,
+  'Смоленская область': 15544,
+  'Ставропольский край': 15712,
+  'Тамбовская область': 14875,
+  'Тверская область': 16580,
+  'Томская область': 17795,
+  'Тульская область': 15544,
+  'Тюменская область': 17795,
+  'Удмуртская Республика': 15544,
+  'Ульяновская область': 15544,
+  'Хабаровский край': 21290,
+  'Ханты-Мансийский АО — Югра': 23706,
+  'Херсонская область': 17412,
+  'Челябинская область': 17044,
+  'Чеченская Республика': 16755,
+  'Чувашская Республика': 15216,
+  'Чукотский автономный округ': 41795,
+  'Ямало-Ненецкий АО': 29500,
+  'Ярославская область': 16755,
+  'г. Байконур': 17412,
+  'г. Москва': 24801,
+  'г. Санкт-Петербург': 20765,
+  'г. Севастополь': 17412,
 };
 
-const REGION_NAMES = Object.keys(REGIONS).sort();
+var REGION_NAMES = Object.keys(REGIONS).sort();
 
 // ──── State ────
-const S = {
+var S = {
   citizen: null,
   children: 0,
   region: null,
@@ -941,17 +1147,18 @@ const S = {
   famSize: 3,
   alimony: null,
 };
-let curScreen = 0;
-const TOTAL = 7;
-let childCount = 0;
-let famCount = 3;
+var curScreen = 0;
+var TOTAL = 7;
+var childCount = 0;
+var famCount = 3;
+var prevScreen = 's0';
 
 // ──── Navigation ────
 function go(n) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById('s' + n) || document.getElementById(n);
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById('s' + n) || document.getElementById(n);
   if (el) { el.classList.add('active'); curScreen = n; }
-  const isStep = typeof n === 'number' && n >= 1 && n <= TOTAL;
+  var isStep = typeof n === 'number' && n >= 1 && n <= TOTAL;
   document.getElementById('progWrap').style.opacity = isStep ? '1' : '0';
   if (isStep) {
     document.getElementById('progFill').style.width = Math.round((n / TOTAL) * 100) + '%';
@@ -961,26 +1168,48 @@ function go(n) {
 }
 
 function showResult(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
   document.getElementById('progWrap').style.opacity = '0';
   window.scrollTo(0, 0);
+}
+
+function goFaq() {
+  prevScreen = curScreen;
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('s-faq').classList.add('active');
+  document.getElementById('progWrap').style.opacity = '0';
+  window.scrollTo(0, 0);
+}
+
+function backFromFaq() {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById('s' + prevScreen) || document.getElementById(prevScreen);
+  if (el) el.classList.add('active');
+  else document.getElementById('s0').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ──── FAQ toggle ────
+function toggleFaq(btn) {
+  var item = btn.parentElement;
+  item.classList.toggle('open');
 }
 
 // ──── Answer handler ────
 function ans(field, val) {
   S[field] = val;
   if (field === 'citizen') {
-    if (!val) { buildNo(['Выплата предоставляется только гражданам Российской Федерации.']); showResult('r-no'); }
+    if (!val) { buildNo(['Выплата предоставляется только гражданам Российской Федерации, постоянно проживающим на территории России.']); showResult('r-no'); }
     else go(2);
   } else if (field === 'myWork') {
-    if (val === 'no_ndfl') { buildNo(['С вашего дохода не удерживается НДФЛ по ставке 13%. Выплата рассчитывается именно как возврат 7% от уплаченного НДФЛ, поэтому самозанятые (НПД), ИП на УСН и безработные не имеют права на неё.']); showResult('r-no'); }
+    if (val === 'no_ndfl') { buildNo(['С вашего дохода не уплачивался НДФЛ в 2025 году. Выплата рассчитывается как разница между фактически уплаченным НДФЛ и суммой по льготной ставке 6%, поэтому самозанятые (НПД), ИП на спецрежимах и безработные права на неё не имеют.']); showResult('r-no'); }
     else go(5);
   } else if (field === 'spouseWork') {
     updateIncomeScreen();
     go(6);
   } else if (field === 'alimony') {
-    if (val) { buildNo(['Наличие задолженности по алиментам является основанием для отказа в выплате. После погашения долга право на выплату может восстановиться.']); showResult('r-no'); }
+    if (val) { buildNo(['Наличие подтверждённой задолженности по алиментам является основанием для отказа в выплате. После полного погашения долга право на выплату может восстановиться.']); showResult('r-no'); }
     else calcResult();
   }
 }
@@ -995,7 +1224,7 @@ function chC(d) {
 function submitChildren() {
   S.children = childCount;
   if (childCount < 2) {
-    buildNo(['Выплата положена только при наличии двух и более детей до 18 лет (или до 23 лет при очном обучении). У вас указан ' + childCount + ' ребёнок.']);
+    buildNo(['Выплата положена при наличии двух и более детей до 18 лет (или до 23 лет при очном обучении и отсутствии брака). У вас указан ' + childCount + ' ребёнок.']);
     showResult('r-no');
   } else go(3);
 }
@@ -1011,17 +1240,17 @@ function chF(d) {
 
 // ──── Region ────
 function renderRegions(filter) {
-  const list = document.getElementById('regionList');
-  const q = (filter || '').toLowerCase();
-  const items = REGION_NAMES.filter(r => !q || r.toLowerCase().includes(q));
-  list.innerHTML = items.map(r => {
-    const pm = REGIONS[r];
-    const thresh = Math.round(pm * 1.5);
-    const sel = S.region === r ? ' selected' : '';
-    return `<div class="region-item${sel}" onclick="selectRegion('${r.replace(/'/g,"\\'")}')">
-      <span>${r}</span>
-      <span class="ri-pm">ПМ ${fmt(pm)} ₽</span>
-    </div>`;
+  var list = document.getElementById('regionList');
+  var q = (filter || '').toLowerCase();
+  var items = REGION_NAMES.filter(function(r) { return !q || r.toLowerCase().indexOf(q) >= 0; });
+  list.innerHTML = items.map(function(r) {
+    var pm = REGIONS[r];
+    var thresh = Math.round(pm * 1.5);
+    var sel = S.region === r ? ' selected' : '';
+    return '<div class="region-item' + sel + '" onclick="selectRegion(\'' + r.replace(/'/g, "\\'") + '\')">' +
+      '<span>' + r + '</span>' +
+      '<span class="ri-pm">ПМ ' + fmt(pm) + ' ₽</span>' +
+      '</div>';
   }).join('') || '<div style="padding:12px 14px;color:var(--hint);font-size:13px">Регион не найден</div>';
 }
 function filterRegions() {
@@ -1047,48 +1276,44 @@ function clearRegion() {
 // ──── Income screen ────
 function updateIncomeScreen() {
   if (!S.region) return;
-  const pm = REGIONS[S.region];
-  const thresh = pm * 1.5;
-  const threshYear = thresh * 12;
+  var pm = REGIONS[S.region];
+  var thresh = pm * 1.5;
   document.getElementById('thresholdInfo').innerHTML =
-    `<b>📌 Порог для вашего региона</b><br>
-     Прожиточный минимум трудоспособного (${S.region}): <b>${fmt(pm)} ₽/мес</b><br>
-     1,5 × ПМ = <b>${fmt(Math.round(thresh))} ₽/чел/мес</b><br>
-     Среднедушевой доход семьи должен быть <b>не выше этого значения</b>.`;
-  // Show spouse income field in calculator
-  const showSpouse = S.spouseWork === 'ndfl';
-  document.getElementById('calcIncome2Wrap').style.display = showSpouse ? 'block' : 'none';
+    '<b>📌 Порог для вашего региона</b><br>' +
+    'Прожиточный минимум на душу населения (' + S.region + '): <b>' + fmt(pm) + ' ₽/мес</b><br>' +
+    '1,5 × ПМ = <b>' + fmt(Math.round(thresh)) + ' ₽/чел/мес</b><br>' +
+    'Среднедушевой доход семьи должен быть <b>не выше этого значения</b>.';
 }
 
 function updateCalc() {
-  const val = parseFloat(document.getElementById('totalIncome').value) || 0;
+  var val = parseFloat(document.getElementById('totalIncome').value) || 0;
   S.totalIncome = val;
-  const pm = S.region ? REGIONS[S.region] : 20644;
-  const thresh = pm * 1.5 * 12 * S.famSize; // annual threshold for whole family
-  const monthlyPC = val > 0 ? val / S.famSize / 12 : 0;
-  const limit = pm * 1.5;
+  var pm = S.region ? REGIONS[S.region] : 17412;
+  var limit = pm * 1.5;
+  var monthlyPC = val > 0 ? val / S.famSize / 12 : 0;
 
-  let checkHTML = '';
+  var checkHTML = '';
   if (val > 0) {
-    const ok = monthlyPC <= limit;
-    const icon = ok ? '✅' : '❌';
-    const color = ok ? 'var(--green)' : 'var(--red)';
-    checkHTML = `<div style="background:var(--secondary-bg);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;line-height:1.5;">
-      ${icon} Среднедушевой доход: <b style="color:${color}">${fmt(Math.round(monthlyPC))} ₽/мес</b><br>
-      ${ok ? `Не превышает порог ${fmt(Math.round(limit))} ₽ — <b style="color:var(--green)">условие выполнено</b>` :
-              `Превышает порог ${fmt(Math.round(limit))} ₽ — <b style="color:var(--red)">условие не выполнено</b>`}
-    </div>`;
+    var ok = monthlyPC <= limit;
+    var icon = ok ? '✅' : '❌';
+    var color = ok ? 'var(--green)' : 'var(--red)';
+    checkHTML = '<div style="background:var(--secondary-bg);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;line-height:1.5;">' +
+      icon + ' Среднедушевой доход: <b style="color:' + color + '">' + fmt(Math.round(monthlyPC)) + ' ₽/мес</b><br>' +
+      (ok
+        ? 'Не превышает порог ' + fmt(Math.round(limit)) + ' ₽ — <b style="color:var(--green)">условие выполнено</b>'
+        : 'Превышает порог ' + fmt(Math.round(limit)) + ' ₽ — <b style="color:var(--red)">условие не выполнено</b>') +
+      '</div>';
     document.getElementById('incomeContinueBtn').disabled = false;
   } else {
     document.getElementById('incomeContinueBtn').disabled = true;
   }
-  const el = document.getElementById('incomeCheck');
+  var el = document.getElementById('incomeCheck');
   el.style.display = checkHTML ? 'block' : 'none';
   el.innerHTML = checkHTML;
 }
 
 // ──── Rate selector ────
-let selectedRate = 13;
+var selectedRate = 13;
 function selectRate(r) {
   selectedRate = r;
   var b13 = document.getElementById('rateBtn13');
@@ -1103,29 +1328,38 @@ function selectRate(r) {
       ? 'background:#fff !important;color:#0055a4 !important;-webkit-text-fill-color:#0055a4 !important;border:2px solid #fff !important;'
       : 'background:rgba(255,255,255,0.12) !important;color:rgba(255,255,255,0.85) !important;-webkit-text-fill-color:rgba(255,255,255,0.85) !important;border:2px solid rgba(255,255,255,0.5) !important;');
   b15.textContent = r === 15 ? '✓ 15%' : '15%';
+
+  var hint = document.getElementById('rateHint');
+  if (r === 13) {
+    hint.textContent = 'Доход до 2,4 млн ₽ в год. Выплата = 13% − 6% = 7% от дохода.';
+  } else {
+    hint.textContent = 'Доход от 2,4 до 5 млн ₽ в год. Выплата = 15% − 6% = 9% от дохода.';
+  }
   calcPayment();
 }
 
 // ──── Calc payment ────
+// Формула (официальный сайт СФР): выплата = НДФЛ фактический − НДФЛ по льготной ставке 6%
+// При 13%: 13% − 6% = 7% от дохода
+// При 15%: 15% − 6% = 9% от дохода
 function calcPayment() {
-  const i1 = parseFloat(document.getElementById('calcIncome1').value) || 0;
-  const calcIncome2El = document.getElementById('calcIncome2');
-  const i2 = parseFloat(calcIncome2El ? calcIncome2El.value : 0) || 0;
-  const rate = selectedRate;
-  const preferential = rate === 15 ? 8 : 6;
-  const diff = rate - preferential; // всегда 7
-  const hint = document.getElementById('rateHint');
-  if (hint) hint.textContent = rate === 15
-    ? '15% — доход свыше 2,4 млн ₽ в год. Льготная ставка ' + preferential + '%. Выплата = ' + diff + '% от дохода.'
-    : '13% — доход до 2,4 млн ₽ в год. В обоих случаях выплата = 7% от дохода (льготная ставка: 6% или 8% соответственно).';
-  const total = (i1 + i2) * (diff / 100);
-  const el = document.getElementById('calcResult');
-  const note = document.getElementById('calcNote');
+  var i1 = parseFloat(document.getElementById('calcIncome1').value) || 0;
+  var calcIncome2El = document.getElementById('calcIncome2');
+  var i2 = parseFloat(calcIncome2El ? calcIncome2El.value : 0) || 0;
+  var rate = selectedRate;
+  var preferential = 6; // льготная ставка всегда 6% (источник: sfr.gov.ru)
+  var diff = rate - preferential; // 7% при 13%, 9% при 15%
+  var total = (i1 + i2) * (diff / 100);
+  var el = document.getElementById('calcResult');
+  var note = document.getElementById('calcNote');
   if (total > 0) {
     el.textContent = fmt(Math.round(total)) + ' ₽';
-    note.textContent = '≈ ' + fmt(Math.round(i1 * diff / 100)) + ' ₽ (вам)' +
-      (i2 > 0 ? ' + ' + fmt(Math.round(i2 * diff / 100)) + ' ₽ (супругу)' : '') +
-      '. Фактическую сумму определяет СФР по данным ФНС.';
+    var noteText = '';
+    if (i2 > 0) {
+      noteText = '≈ ' + fmt(Math.round(i1 * diff / 100)) + ' ₽ (вам) + ' + fmt(Math.round(i2 * diff / 100)) + ' ₽ (супругу). ';
+    }
+    noteText += 'Фактическую сумму определяет СФР по данным ФНС.';
+    note.textContent = noteText;
   } else {
     el.textContent = '—';
     note.textContent = 'Введите годовой доход выше для расчёта.';
@@ -1134,16 +1368,15 @@ function calcPayment() {
 
 // ──── Eligibility ────
 function calcResult() {
-  const pm = S.region ? REGIONS[S.region] : 20644;
-  const limit = pm * 1.5;
-  const monthlyPC = S.totalIncome > 0 ? S.totalIncome / S.famSize / 12 : 0;
-  const incomeOk = S.totalIncome > 0 ? monthlyPC <= limit : null;
+  var pm = S.region ? REGIONS[S.region] : 17412;
+  var limit = pm * 1.5;
+  var monthlyPC = S.totalIncome > 0 ? S.totalIncome / S.famSize / 12 : 0;
+  var incomeOk = S.totalIncome > 0 ? monthlyPC <= limit : null;
 
-  const blockers = [];
-  const warnings = [];
+  var blockers = [];
 
   if (!incomeOk && incomeOk !== null) {
-    blockers.push(`Среднедушевой доход семьи (${fmt(Math.round(monthlyPC))} ₽/мес) превышает допустимый порог 1,5 × ПМ = ${fmt(Math.round(limit))} ₽/мес для ${S.region}.`);
+    blockers.push('Среднедушевой доход семьи (' + fmt(Math.round(monthlyPC)) + ' ₽/мес) превышает допустимый порог 1,5 × ПМ = ' + fmt(Math.round(limit)) + ' ₽/мес для ' + S.region + '.');
   }
 
   if (blockers.length > 0) {
@@ -1152,13 +1385,14 @@ function calcResult() {
     return;
   }
 
-  // Yes — show result
-  const spouseNote = S.spouseWork === 'ndfl'
-    ? 'Ваш супруг(а) также может подать заявление отдельно — выплата рассчитывается для каждого.'
-    : S.spouseWork === 'single'
-    ? 'Как единственному родителю, выплата рассчитывается по вашему доходу.'
-    : 'Супруг(а) не имеет права на выплату, но вы сами можете её получить.';
-
+  var spouseNote = '';
+  if (S.spouseWork === 'ndfl') {
+    spouseNote = 'Ваш супруг(а) также может подать заявление отдельно — выплата рассчитывается индивидуально для каждого.';
+  } else if (S.spouseWork === 'single') {
+    spouseNote = 'Как единственному родителю, выплата рассчитывается по вашему доходу.';
+  } else {
+    spouseNote = 'Супруг(а) не имеет права на выплату, но вы сами можете её получить.';
+  }
   document.getElementById('rYesBody').textContent = spouseNote;
   document.getElementById('calcIncome2Wrap').style.display = S.spouseWork === 'ndfl' ? 'block' : 'none';
   showResult('r-yes');
@@ -1166,14 +1400,14 @@ function calcResult() {
 
 // ──── Build reason cards ────
 function buildNo(reasons) {
-  document.getElementById('noReasons').innerHTML = reasons.map(r =>
-    `<div class="card blocked"><div class="card-icon">❌</div><div>${r}</div></div>`
-  ).join('');
+  document.getElementById('noReasons').innerHTML = reasons.map(function(r) {
+    return '<div class="card blocked"><div class="card-icon">❌</div><div>' + r + '</div></div>';
+  }).join('');
 }
 function buildMaybe(reasons) {
-  document.getElementById('maybeReasons').innerHTML = reasons.map(r =>
-    `<div class="card"><div class="card-icon">⚠️</div><div>${r}</div></div>`
-  ).join('');
+  document.getElementById('maybeReasons').innerHTML = reasons.map(function(r) {
+    return '<div class="card"><div class="card-icon">⚠️</div><div>' + r + '</div></div>';
+  }).join('');
 }
 
 // ──── Format number ────
@@ -1183,15 +1417,15 @@ function fmt(n) {
 
 // ──── External links ────
 function openGU() {
-  const url = 'https://www.gosuslugi.ru/600229/1';
-  tg ? tg.openLink(url) : window.open(url, '_blank');
+  var url = 'https://www.gosuslugi.ru/600229/1';
+  if (tg) { tg.openLink(url); } else { window.open(url, '_blank'); }
 }
 function openGU2() {
-  const url = 'https://www.gosuslugi.ru/category/family';
-  tg ? tg.openLink(url) : window.open(url, '_blank');
+  var url = 'https://www.gosuslugi.ru/category/family';
+  if (tg) { tg.openLink(url); } else { window.open(url, '_blank'); }
 }
 function openExternal(url) {
-  tg ? tg.openLink(url) : window.open(url, '_blank');
+  if (tg) { tg.openLink(url); } else { window.open(url, '_blank'); }
 }
 
 // ──── Restart ────
