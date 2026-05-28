@@ -270,6 +270,15 @@
       cursor: pointer; transition: all .2s;
     }
     .btn-ghost:hover { background: var(--secondary-bg); }
+    .btn-faq {
+      width: 100%; padding: 13px;
+      background: var(--blue-light); color: var(--blue) !important;
+      font-size: 14px; font-weight: 600;
+      border: 2px solid var(--blue);
+      border-radius: var(--radius-sm);
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-faq:hover { background: #d0e4f7; }
 
     /* ──── RESULT ──── */
     .result-hero {
@@ -555,7 +564,7 @@
     </div>
 
     <button class="btn-primary" onclick="go(1)">Начать проверку →</button>
-    <button class="btn-ghost" onclick="goFaq()">Частые вопросы ❓</button>
+    <button class="btn-faq" onclick="goFaq()">❓ Частые вопросы</button>
 
     <div>
       <p style="font-size:12px;color:var(--hint);margin-bottom:8px;font-weight:600;">ДРУГИЕ МЕРЫ ПОДДЕРЖКИ СЕМЕЙ</p>
@@ -585,7 +594,7 @@
     <div class="opts">
       <div class="opt" onclick="ans('citizen', true)">
         <div class="opt-icon">✅</div>
-        <div class="opt-body"><div class="opt-label">Да, я и дети — граждане РФ, живём в России</div></div>
+        <div class="opt-body"><div class="opt-label">Да, я и дети — граждане РФ, постоянно проживаем в России</div></div>
       </div>
       <div class="opt" onclick="ans('citizen', false)">
         <div class="opt-icon">🚫</div>
@@ -835,7 +844,7 @@
     </div>
 
     <button class="btn-primary" onclick="openGU()">Подать заявление на Госуслугах →</button>
-    <button class="btn-ghost" onclick="goFaq()">Частые вопросы ❓</button>
+    <button class="btn-faq" onclick="goFaq()">❓ Частые вопросы</button>
     <button class="btn-secondary" onclick="restart()">Пройти ещё раз</button>
     <p class="foot-note">⚠️ Результат носит информационный характер. Окончательное решение принимает СФР на основе данных ФНС и других ведомств.</p>
   </div>
@@ -865,7 +874,7 @@
     </div>
 
     <button class="btn-primary" onclick="openGU2()">Все выплаты семьям на Госуслугах →</button>
-    <button class="btn-ghost" onclick="goFaq()">Частые вопросы ❓</button>
+    <button class="btn-faq" onclick="goFaq()">❓ Частые вопросы</button>
     <button class="btn-secondary" onclick="restart()">Пройти ещё раз</button>
     <p class="foot-note">⚠️ Обратитесь в СФР для точной консультации: <b>8-800-100-00-01</b></p>
   </div>
